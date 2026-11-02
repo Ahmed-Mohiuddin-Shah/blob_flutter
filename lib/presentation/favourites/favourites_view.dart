@@ -32,9 +32,7 @@ class FavouritesView extends StatelessWidget {
                   itemBuilder: (context, i) {
                     final m = items[i];
                     return ListTile(
-                      title: Text(
-                        '${m['subjectType'] ?? m['type'] ?? 'item'}',
-                      ),
+                      title: Text('${m['subjectType'] ?? m['type'] ?? 'item'}'),
                       subtitle: Text('${m['subjectId'] ?? m['id'] ?? ''}'),
                     );
                   },

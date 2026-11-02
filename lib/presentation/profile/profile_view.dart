@@ -82,10 +82,7 @@ class ProfileView extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        _UsernameEditor(
-                          initial: u,
-                          busy: me.loading,
-                        ),
+                        _UsernameEditor(initial: u, busy: me.loading),
                       ],
                     ),
                   ),
@@ -111,8 +108,9 @@ class _UsernameEditor extends StatefulWidget {
 
 // ponytail: TextEditingController ownership only.
 class _UsernameEditorState extends State<_UsernameEditor> {
-  late final TextEditingController _c =
-      TextEditingController(text: widget.initial);
+  late final TextEditingController _c = TextEditingController(
+    text: widget.initial,
+  );
 
   @override
   void dispose() {
@@ -171,24 +169,20 @@ class LibraryView extends StatelessWidget {
                   sliver: SliverGrid(
                     gridDelegate:
                         const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 180,
-                      childAspectRatio: 0.78,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (context, i) {
-                        final s = state.items[i];
-                        return StickerCard(
-                          title: s.displayTitle,
-                          imageUrl: s.previewUrl,
-                          onTap: () => context.push(
-                            RouteNames.sticker(s.slug ?? s.id),
-                          ),
-                        );
-                      },
-                      childCount: state.items.length,
-                    ),
+                          maxCrossAxisExtent: 180,
+                          childAspectRatio: 0.78,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                        ),
+                    delegate: SliverChildBuilderDelegate((context, i) {
+                      final s = state.items[i];
+                      return StickerCard(
+                        title: s.displayTitle,
+                        imageUrl: s.previewUrl,
+                        onTap: () =>
+                            context.push(RouteNames.sticker(s.slug ?? s.id)),
+                      );
+                    }, childCount: state.items.length),
                   ),
                 ),
             ],

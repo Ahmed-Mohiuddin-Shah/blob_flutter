@@ -22,13 +22,12 @@ class SearchState extends Equatable {
     List<StickerModel>? items,
     bool? loading,
     String? error,
-  }) =>
-      SearchState(
-        query: query ?? this.query,
-        items: items ?? this.items,
-        loading: loading ?? this.loading,
-        error: error,
-      );
+  }) => SearchState(
+    query: query ?? this.query,
+    items: items ?? this.items,
+    loading: loading ?? this.loading,
+    error: error,
+  );
 
   @override
   List<Object?> get props => [query, items, loading, error];
@@ -36,7 +35,7 @@ class SearchState extends Equatable {
 
 class SearchCubit extends Cubit<SearchState> with XSafeEmitMixin {
   SearchCubit({String? initialQuery})
-      : super(SearchState(query: initialQuery ?? ''));
+    : super(SearchState(query: initialQuery ?? ''));
 
   Future<void> search(String q) async {
     xSafeEmit(state.copyWith(query: q, loading: true, error: null));

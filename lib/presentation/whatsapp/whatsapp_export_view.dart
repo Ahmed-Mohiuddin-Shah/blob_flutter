@@ -35,10 +35,7 @@ class _Body extends StatelessWidget {
           showSettings: false,
           slivers: [
             const SliverToBoxAdapter(
-              child: SectionHeader(
-                eyebrow: 'Export',
-                title: 'static pack',
-              ),
+              child: SectionHeader(eyebrow: 'Export', title: 'static pack'),
             ),
             if (state.error != null)
               SliverToBoxAdapter(
@@ -56,29 +53,26 @@ class _Body extends StatelessWidget {
                   mainAxisSpacing: 8,
                   crossAxisSpacing: 8,
                 ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, i) {
-                    final s = state.candidates[i];
-                    final on = state.selected.contains(s.id);
-                    return Stack(
-                      children: [
-                        StickerCard(
-                          title: s.displayTitle,
-                          imageUrl: s.previewUrl,
-                          onTap: () =>
-                              context.read<WhatsappExportCubit>().toggle(s.id),
+                delegate: SliverChildBuilderDelegate((context, i) {
+                  final s = state.candidates[i];
+                  final on = state.selected.contains(s.id);
+                  return Stack(
+                    children: [
+                      StickerCard(
+                        title: s.displayTitle,
+                        imageUrl: s.previewUrl,
+                        onTap: () =>
+                            context.read<WhatsappExportCubit>().toggle(s.id),
+                      ),
+                      if (on)
+                        const Positioned(
+                          top: 4,
+                          right: 4,
+                          child: Icon(Icons.check_circle, color: Colors.green),
                         ),
-                        if (on)
-                          const Positioned(
-                            top: 4,
-                            right: 4,
-                            child: Icon(Icons.check_circle, color: Colors.green),
-                          ),
-                      ],
-                    );
-                  },
-                  childCount: state.candidates.length,
-                ),
+                    ],
+                  );
+                }, childCount: state.candidates.length),
               ),
             ),
             SliverToBoxAdapter(
@@ -87,8 +81,10 @@ class _Body extends StatelessWidget {
                 child: BusyButton(
                   label: 'Build & send to WhatsApp',
                   busy: state.busy,
-                  onPressed: () => context.read<WhatsappExportCubit>().exportPack(
-                        identifier: 'blob_${DateTime.now().millisecondsSinceEpoch}',
+                  onPressed: () =>
+                      context.read<WhatsappExportCubit>().exportPack(
+                        identifier:
+                            'blob_${DateTime.now().millisecondsSinceEpoch}',
                         name: 'BLOB Pack',
                         publisher: 'BLOB',
                       ),

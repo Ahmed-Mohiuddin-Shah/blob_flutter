@@ -29,11 +29,9 @@ class SharedPrefs {
   Future<bool> setThemeMode(String mode) =>
       _prefs!.setString(_themeModeKey, mode);
 
-  bool get isOnboardingComplete =>
-      _prefs?.getBool(_onboardingKey) ?? false;
+  bool get isOnboardingComplete => _prefs?.getBool(_onboardingKey) ?? false;
 
-  Future<bool> completeOnboarding() =>
-      _prefs!.setBool(_onboardingKey, true);
+  Future<bool> completeOnboarding() => _prefs!.setBool(_onboardingKey, true);
 }
 
 final SharedPrefs sharedPrefs = SharedPrefs();

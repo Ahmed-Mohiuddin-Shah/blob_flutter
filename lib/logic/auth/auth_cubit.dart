@@ -16,11 +16,7 @@ class AuthState extends Equatable {
   final bool busy;
   final String? error;
 
-  AuthState copyWith({
-    AuthStatus? status,
-    bool? busy,
-    String? error,
-  }) =>
+  AuthState copyWith({AuthStatus? status, bool? busy, String? error}) =>
       AuthState(
         status: status ?? this.status,
         busy: busy ?? this.busy,
@@ -37,9 +33,7 @@ class AuthCubit extends Cubit<AuthState> with XSafeEmitMixin {
   Future<void> restoreSession() async {
     final has = await ZitadelAuth.hasSession();
     xSafeEmit(
-      state.copyWith(
-        status: has ? AuthStatus.signedIn : AuthStatus.signedOut,
-      ),
+      state.copyWith(status: has ? AuthStatus.signedIn : AuthStatus.signedOut),
     );
   }
 

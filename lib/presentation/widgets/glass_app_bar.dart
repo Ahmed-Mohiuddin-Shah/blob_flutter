@@ -61,7 +61,10 @@ class GlassAppBar extends StatelessWidget {
                     IconButton(
                       tooltip: 'Back',
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 20,
+                      ),
                     )
                   else
                     const SizedBox(width: 8),
@@ -70,10 +73,8 @@ class GlassAppBar extends StatelessWidget {
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.visible,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w300,
-                            height: 1.05,
-                          ),
+                      style: Theme.of(context).textTheme.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.w300, height: 1.05),
                     ),
                   ),
                   ...?actions,

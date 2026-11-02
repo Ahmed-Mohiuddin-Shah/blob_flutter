@@ -15,13 +15,13 @@ abstract final class SearchRepo {
     try {
       final res = await _api.dioAdapter.get(
         '/api/search',
-        queryParameters: {
-          'q': q,
-          if (cursor != null) 'cursor': cursor,
-        },
+        queryParameters: {'q': q, if (cursor != null) 'cursor': cursor},
       );
       // Search may return mixed types; prefer sticker-shaped items.
-      return (data: ApiParse.cursorPage(res.data, StickerModel.fromJson), error: null);
+      return (
+        data: ApiParse.cursorPage(res.data, StickerModel.fromJson),
+        error: null,
+      );
     } on DioException catch (e) {
       return (
         data: null,

@@ -29,9 +29,7 @@ abstract final class ZitadelAuth {
           redirect,
           discoveryUrl: discoveryUrl,
           scopes: const ['openid', 'profile', 'email', 'offline_access'],
-          additionalParameters: {
-            if (audience.isNotEmpty) 'audience': audience,
-          },
+          additionalParameters: {if (audience.isNotEmpty) 'audience': audience},
         ),
       );
       final access = result.accessToken;

@@ -12,10 +12,10 @@ class MeState extends Equatable {
   final String? error;
 
   MeState copyWith({MeModel? me, bool? loading, String? error}) => MeState(
-        me: me ?? this.me,
-        loading: loading ?? this.loading,
-        error: error,
-      );
+    me: me ?? this.me,
+    loading: loading ?? this.loading,
+    error: error,
+  );
 
   @override
   List<Object?> get props => [me, loading, error];

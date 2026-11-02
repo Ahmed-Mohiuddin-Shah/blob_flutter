@@ -36,10 +36,8 @@ class SectionHeader extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   title.toLowerCase(),
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w300,
-                        height: 1.0,
-                      ),
+                  style: Theme.of(context).textTheme.headlineMedium
+                      ?.copyWith(fontWeight: FontWeight.w300, height: 1.0),
                 ),
               ],
             ),

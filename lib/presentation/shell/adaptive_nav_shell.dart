@@ -27,12 +27,12 @@ class AdaptiveNavShell extends StatelessWidget {
   ];
 
   static SvgGenImage _icon(HomeTab tab) => switch (tab) {
-        HomeTab.stickers => Assets.svgs.lucide.stickyNote,
-        HomeTab.blobbers => Assets.svgs.lucide.user,
-        HomeTab.prints => Assets.svgs.lucide.printer,
-        HomeTab.collections => Assets.svgs.lucide.layers,
-        HomeTab.search => Assets.svgs.lucide.search,
-      };
+    HomeTab.stickers => Assets.svgs.lucide.stickyNote,
+    HomeTab.blobbers => Assets.svgs.lucide.user,
+    HomeTab.prints => Assets.svgs.lucide.printer,
+    HomeTab.collections => Assets.svgs.lucide.layers,
+    HomeTab.search => Assets.svgs.lucide.search,
+  };
 
   void _onSelect(BuildContext context, int index) {
     context.read<HomeNavigationCubit>().selectTab(index);
@@ -74,8 +74,7 @@ class AdaptiveNavShell extends StatelessWidget {
                 for (final t in _tabs)
                   NavigationRailDestination(
                     icon: _NavIcon(asset: _icon(t.tab)),
-                    selectedIcon:
-                        _NavIcon(asset: _icon(t.tab), selected: true),
+                    selectedIcon: _NavIcon(asset: _icon(t.tab), selected: true),
                     label: Text(t.label),
                   ),
               ],

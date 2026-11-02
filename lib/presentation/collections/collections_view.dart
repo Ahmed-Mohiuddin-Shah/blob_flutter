@@ -41,13 +41,13 @@ class CollectionsView extends StatelessWidget {
                   itemBuilder: (context, i) {
                     final c = state.items[i];
                     return ListTile(
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 20),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
                       title: Text(c.displayTitle),
                       subtitle: Text('${c.itemCount ?? 0} stickers'),
-                      onTap: () => context.push(
-                        RouteNames.collection(c.slug ?? c.id),
-                      ),
+                      onTap: () =>
+                          context.push(RouteNames.collection(c.slug ?? c.id)),
                     );
                   },
                 ),
@@ -64,10 +64,7 @@ class CollectionCreateView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AuthGate(
-      title: 'new collection',
-      child: _CollectionCreateBody(),
-    );
+    return AuthGate(title: 'new collection', child: _CollectionCreateBody());
   }
 }
 
@@ -103,8 +100,7 @@ class _CollectionCreateBodyState extends State<_CollectionCreateBody> {
                     children: [
                       TextField(
                         controller: controller,
-                        decoration:
-                            const InputDecoration(labelText: 'Title'),
+                        decoration: const InputDecoration(labelText: 'Title'),
                       ),
                       const SizedBox(height: 16),
                       BusyButton(
@@ -116,9 +112,7 @@ class _CollectionCreateBodyState extends State<_CollectionCreateBody> {
                               .create(controller.text.trim());
                           if (created != null && context.mounted) {
                             context.go(
-                              RouteNames.collection(
-                                created.slug ?? created.id,
-                              ),
+                              RouteNames.collection(created.slug ?? created.id),
                             );
                           }
                         },

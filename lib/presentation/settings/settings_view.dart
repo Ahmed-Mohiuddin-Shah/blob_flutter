@@ -36,8 +36,8 @@ class SettingsView extends StatelessWidget {
                 value: state.navRailSide == NavRailSide.left,
                 onChanged: (left) {
                   context.read<AppSettingsCubit>().setNavRailSide(
-                        left ? NavRailSide.left : NavRailSide.right,
-                      );
+                    left ? NavRailSide.left : NavRailSide.right,
+                  );
                 },
               );
             },
@@ -92,7 +92,10 @@ class SpiverThemeTile extends StatelessWidget {
             trailing: DropdownButton<ThemeMode>(
               value: state.themeMode,
               items: const [
-                DropdownMenuItem(value: ThemeMode.system, child: Text('System')),
+                DropdownMenuItem(
+                  value: ThemeMode.system,
+                  child: Text('System'),
+                ),
                 DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
                 DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
               ],

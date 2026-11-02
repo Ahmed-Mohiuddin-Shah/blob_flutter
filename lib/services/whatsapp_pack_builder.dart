@@ -18,9 +18,9 @@ abstract final class WhatsappPackBuilder {
     required int packId,
     required List<String> stickerIds,
   }) async {
-    final pack = await (db.select(db.whatsappPackDrafts)
-          ..where((t) => t.id.equals(packId)))
-        .getSingle();
+    final pack = await (db.select(
+      db.whatsappPackDrafts,
+    )..where((t) => t.id.equals(packId))).getSingle();
     // ponytail: animated packs deferred — clear stub path.
     if (pack.animated) {
       throw UnsupportedError('Animated WhatsApp packs not in v1');
@@ -49,8 +49,7 @@ abstract final class WhatsappPackBuilder {
       if (decoded == null) continue;
 
       final square = img.copyResize(decoded, width: 512, height: 512);
-      final outBytes =
-          img.encodeWebP(square, lossless: false, quality: 90);
+      final outBytes = img.encodeWebP(square, lossless: false, quality: 90);
       final filePath = p.join(packDir.path, 'sticker_$i.webp');
       await File(filePath).writeAsBytes(outBytes);
 
@@ -60,7 +59,9 @@ abstract final class WhatsappPackBuilder {
         await File(trayPath).writeAsBytes(img.encodePng(tray));
       }
 
-      await db.into(db.whatsappPackStickers).insert(
+      await db
+          .into(db.whatsappPackStickers)
+          .insert(
             WhatsappPackStickersCompanion.insert(
               packId: packId,
               stickerId: id,
@@ -69,10 +70,7 @@ abstract final class WhatsappPackBuilder {
             ),
           );
 
-      stickerRows.add([
-        WhatsappStickerImage.fromFile(filePath).path,
-        '🙂',
-      ]);
+      stickerRows.add([WhatsappStickerImage.fromFile(filePath).path, '🙂']);
     }
 
     if (trayPath == null || stickerRows.isEmpty) {

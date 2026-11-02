@@ -25,14 +25,13 @@ class PrintsState extends Equatable {
     bool? loading,
     bool? busy,
     String? error,
-  }) =>
-      PrintsState(
-        sheets: sheets ?? this.sheets,
-        packs: packs ?? this.packs,
-        loading: loading ?? this.loading,
-        busy: busy ?? this.busy,
-        error: error,
-      );
+  }) => PrintsState(
+    sheets: sheets ?? this.sheets,
+    packs: packs ?? this.packs,
+    loading: loading ?? this.loading,
+    busy: busy ?? this.busy,
+    error: error,
+  );
 
   @override
   List<Object?> get props => [sheets, packs, loading, busy, error];

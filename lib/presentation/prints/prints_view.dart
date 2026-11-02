@@ -52,7 +52,8 @@ class PrintsView extends StatelessWidget {
                     return ListTile(
                       title: Text(s.displayTitle),
                       subtitle: Text(s.status ?? ''),
-                      onTap: () => context.push(RouteNames.sheet(s.slug ?? s.id)),
+                      onTap: () =>
+                          context.push(RouteNames.sheet(s.slug ?? s.id)),
                     );
                   },
                 ),
@@ -137,14 +138,16 @@ class _PrintCreateBodyState extends State<_PrintCreateBody> {
                 onCreate: () async {
                   final title = c.text.trim();
                   if (widget.kind == 'sheet') {
-                    final s =
-                        await context.read<PrintsCubit>().createSheet(title);
+                    final s = await context.read<PrintsCubit>().createSheet(
+                      title,
+                    );
                     if (s != null && context.mounted) {
                       context.go(RouteNames.sheet(s.slug ?? s.id));
                     }
                   } else {
-                    final p =
-                        await context.read<PrintsCubit>().createPack(title);
+                    final p = await context.read<PrintsCubit>().createPack(
+                      title,
+                    );
                     if (p != null && context.mounted) {
                       context.go(RouteNames.pack(p.slug ?? p.id));
                     }
@@ -192,11 +195,7 @@ class SpiverCreateForm extends StatelessWidget {
 }
 
 class PrintDetailView extends StatelessWidget {
-  const PrintDetailView({
-    super.key,
-    required this.id,
-    required this.isSheet,
-  });
+  const PrintDetailView({super.key, required this.id, required this.isSheet});
 
   final String id;
   final bool isSheet;
@@ -218,7 +217,10 @@ class PrintDetailView extends StatelessWidget {
                   label: 'Open PNG',
                   onPressed: () {
                     final url = PrintsRepo.mediaUrl('png', id, sheet: isSheet);
-                    launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                    launchUrl(
+                      Uri.parse(url),
+                      mode: LaunchMode.externalApplication,
+                    );
                   },
                 ),
                 const SizedBox(height: 8),
@@ -226,7 +228,10 @@ class PrintDetailView extends StatelessWidget {
                   label: 'Open PDF',
                   onPressed: () {
                     final url = PrintsRepo.mediaUrl('pdf', id, sheet: isSheet);
-                    launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                    launchUrl(
+                      Uri.parse(url),
+                      mode: LaunchMode.externalApplication,
+                    );
                   },
                 ),
               ],

@@ -25,8 +25,10 @@ abstract final class CompositionRepo {
         'visibility': 'public',
         'document': jsonEncode(document),
         'chat': MultipartFile.fromBytes(chat, filename: 'chat.png'),
-        'thumbnail':
-            MultipartFile.fromBytes(thumbnail, filename: 'thumbnail.png'),
+        'thumbnail': MultipartFile.fromBytes(
+          thumbnail,
+          filename: 'thumbnail.png',
+        ),
         'full': MultipartFile.fromBytes(full, filename: 'full.png'),
         if (mask != null)
           'mask': MultipartFile.fromBytes(mask, filename: 'mask.png'),
@@ -34,9 +36,7 @@ abstract final class CompositionRepo {
 
       final res = await _auth.dioAdapter.post('/api/stickers', data: form);
       return (
-        data: StickerModel.fromJson(
-          Map<String, dynamic>.from(res.data as Map),
-        ),
+        data: StickerModel.fromJson(Map<String, dynamic>.from(res.data as Map)),
         error: null,
       );
     } on DioException catch (e) {
@@ -58,8 +58,10 @@ abstract final class CompositionRepo {
       final form = FormData.fromMap({
         'document': jsonEncode(document),
         'chat': MultipartFile.fromBytes(chat, filename: 'chat.png'),
-        'thumbnail':
-            MultipartFile.fromBytes(thumbnail, filename: 'thumbnail.png'),
+        'thumbnail': MultipartFile.fromBytes(
+          thumbnail,
+          filename: 'thumbnail.png',
+        ),
         'full': MultipartFile.fromBytes(full, filename: 'full.png'),
         if (mask != null)
           'mask': MultipartFile.fromBytes(mask, filename: 'mask.png'),
@@ -70,9 +72,7 @@ abstract final class CompositionRepo {
         data: form,
       );
       return (
-        data: StickerModel.fromJson(
-          Map<String, dynamic>.from(res.data as Map),
-        ),
+        data: StickerModel.fromJson(Map<String, dynamic>.from(res.data as Map)),
         error: null,
       );
     } on DioException catch (e) {
@@ -82,13 +82,13 @@ abstract final class CompositionRepo {
     }
   }
 
-  static Future<({StickerModel? data, ApiError? error})> remix(String id) async {
+  static Future<({StickerModel? data, ApiError? error})> remix(
+    String id,
+  ) async {
     try {
       final res = await _auth.dioAdapter.post('/api/stickers/$id/remix');
       return (
-        data: StickerModel.fromJson(
-          Map<String, dynamic>.from(res.data as Map),
-        ),
+        data: StickerModel.fromJson(Map<String, dynamic>.from(res.data as Map)),
         error: null,
       );
     } on DioException catch (e) {
@@ -117,10 +117,7 @@ abstract final class CompositionRepo {
           return (data: s, error: null);
         }
         if (status == 'failed' || status == 'rejected') {
-          return (
-            data: s,
-            error: ApiError(message: 'Processing $status'),
-          );
+          return (data: s, error: ApiError(message: 'Processing $status'));
         }
       } on DioException catch (e) {
         if (i == maxAttempts - 1) return (data: null, error: _err(e));
@@ -131,7 +128,7 @@ abstract final class CompositionRepo {
   }
 
   static ApiError _err(DioException e) => ApiError(
-        message: e.message ?? 'request failed',
-        statusCode: e.response?.statusCode,
-      );
+    message: e.message ?? 'request failed',
+    statusCode: e.response?.statusCode,
+  );
 }

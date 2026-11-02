@@ -17,7 +17,10 @@ abstract final class CollectionsRepo {
         '/api/collections',
         queryParameters: {if (cursor != null) 'cursor': cursor},
       );
-      return (data: ApiParse.cursorPage(res.data, CollectionModel.fromJson), error: null);
+      return (
+        data: ApiParse.cursorPage(res.data, CollectionModel.fromJson),
+        error: null,
+      );
     } on DioException catch (e) {
       return (data: null, error: _err(e));
     } catch (e) {
@@ -25,11 +28,15 @@ abstract final class CollectionsRepo {
     }
   }
 
-  static Future<({CollectionModel? data, ApiError? error})> get(String slug) async {
+  static Future<({CollectionModel? data, ApiError? error})> get(
+    String slug,
+  ) async {
     try {
       final res = await _public.dioAdapter.get('/api/collections/$slug');
       return (
-        data: CollectionModel.fromJson(Map<String, dynamic>.from(res.data as Map)),
+        data: CollectionModel.fromJson(
+          Map<String, dynamic>.from(res.data as Map),
+        ),
         error: null,
       );
     } on DioException catch (e) {
@@ -48,7 +55,9 @@ abstract final class CollectionsRepo {
         data: {'title': title},
       );
       return (
-        data: CollectionModel.fromJson(Map<String, dynamic>.from(res.data as Map)),
+        data: CollectionModel.fromJson(
+          Map<String, dynamic>.from(res.data as Map),
+        ),
         error: null,
       );
     } on DioException catch (e) {
@@ -80,7 +89,9 @@ abstract final class CollectionsRepo {
     String stickerId,
   ) async {
     try {
-      await _auth.dioAdapter.delete('/api/collections/$slug/stickers/$stickerId');
+      await _auth.dioAdapter.delete(
+        '/api/collections/$slug/stickers/$stickerId',
+      );
       return (error: null);
     } on DioException catch (e) {
       return (error: _err(e));
@@ -101,7 +112,7 @@ abstract final class CollectionsRepo {
   }
 
   static ApiError _err(DioException e) => ApiError(
-        message: e.message ?? 'request failed',
-        statusCode: e.response?.statusCode,
-      );
+    message: e.message ?? 'request failed',
+    statusCode: e.response?.statusCode,
+  );
 }

@@ -73,14 +73,12 @@ class _SearchBodyState extends State<_SearchBody> {
                     ),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.search),
-                      onPressed: () => context
-                          .read<SearchCubit>()
-                          .search(_controller.text),
+                      onPressed: () =>
+                          context.read<SearchCubit>().search(_controller.text),
                     ),
                   ),
                   textInputAction: TextInputAction.search,
-                  onSubmitted: (v) =>
-                      context.read<SearchCubit>().search(v),
+                  onSubmitted: (v) => context.read<SearchCubit>().search(v),
                 ),
               ),
             ),
@@ -92,9 +90,7 @@ class _SearchBodyState extends State<_SearchBody> {
                 child: Center(child: CircularProgressIndicator()),
               )
             else if (state.error != null && state.items.isEmpty)
-              SliverFillRemaining(
-                child: Center(child: Text(state.error!)),
-              )
+              SliverFillRemaining(child: Center(child: Text(state.error!)))
             else
               SpiverSearchGrid(state: state),
           ],
@@ -120,18 +116,14 @@ class SpiverSearchGrid extends StatelessWidget {
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
         ),
-        delegate: SliverChildBuilderDelegate(
-          (context, i) {
-            final s = state.items[i];
-            return StickerCard(
-              title: s.displayTitle,
-              imageUrl: s.previewUrl,
-              onTap: () =>
-                  context.push(RouteNames.sticker(s.slug ?? s.id)),
-            );
-          },
-          childCount: state.items.length,
-        ),
+        delegate: SliverChildBuilderDelegate((context, i) {
+          final s = state.items[i];
+          return StickerCard(
+            title: s.displayTitle,
+            imageUrl: s.previewUrl,
+            onTap: () => context.push(RouteNames.sticker(s.slug ?? s.id)),
+          );
+        }, childCount: state.items.length),
       ),
     );
   }

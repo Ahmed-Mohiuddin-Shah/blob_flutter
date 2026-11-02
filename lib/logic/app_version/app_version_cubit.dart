@@ -5,11 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppVersionState extends Equatable {
-  const AppVersionState({
-    this.check,
-    this.loading = false,
-    this.error,
-  });
+  const AppVersionState({this.check, this.loading = false, this.error});
 
   final AppVersionCheckModel? check;
   final bool loading;
@@ -22,12 +18,11 @@ class AppVersionState extends Equatable {
     AppVersionCheckModel? check,
     bool? loading,
     String? error,
-  }) =>
-      AppVersionState(
-        check: check ?? this.check,
-        loading: loading ?? this.loading,
-        error: error,
-      );
+  }) => AppVersionState(
+    check: check ?? this.check,
+    loading: loading ?? this.loading,
+    error: error,
+  );
 
   @override
   List<Object?> get props => [check, loading, error];

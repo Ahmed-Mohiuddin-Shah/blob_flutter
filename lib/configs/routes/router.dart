@@ -131,9 +131,8 @@ final GoRouter router = GoRouter(
 
     GoRoute(
       path: '/stickers/:slug/edit',
-      builder: (context, state) => StickerEditView(
-        idOrSlug: state.pathParameters['slug']!,
-      ),
+      builder: (context, state) =>
+          StickerEditView(idOrSlug: state.pathParameters['slug']!),
     ),
     GoRoute(
       path: '/stickers/:slug/compose',
@@ -151,9 +150,8 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/stickers/:slug',
-      builder: (context, state) => StickerDetailView(
-        idOrSlug: state.pathParameters['slug']!,
-      ),
+      builder: (context, state) =>
+          StickerDetailView(idOrSlug: state.pathParameters['slug']!),
     ),
 
     GoRoute(
@@ -162,9 +160,8 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/collections/:slug',
-      builder: (context, state) => CollectionDetailView(
-        slug: state.pathParameters['slug']!,
-      ),
+      builder: (context, state) =>
+          CollectionDetailView(slug: state.pathParameters['slug']!),
     ),
 
     GoRoute(
@@ -177,30 +174,24 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/prints/sheets/:slug',
-      builder: (context, state) => PrintDetailView(
-        id: state.pathParameters['slug']!,
-        isSheet: true,
-      ),
+      builder: (context, state) =>
+          PrintDetailView(id: state.pathParameters['slug']!, isSheet: true),
     ),
     GoRoute(
       path: '/prints/packs/:slug',
-      builder: (context, state) => PrintDetailView(
-        id: state.pathParameters['slug']!,
-        isSheet: false,
-      ),
+      builder: (context, state) =>
+          PrintDetailView(id: state.pathParameters['slug']!, isSheet: false),
     ),
 
     GoRoute(
       path: '/blobbers/id/:id',
-      builder: (context, state) => BlobberDetailView(
-        idOrSlug: state.pathParameters['id']!,
-      ),
+      builder: (context, state) =>
+          BlobberDetailView(idOrSlug: state.pathParameters['id']!),
     ),
     GoRoute(
       path: '/blobbers/:slug',
-      builder: (context, state) => BlobberDetailView(
-        idOrSlug: state.pathParameters['slug']!,
-      ),
+      builder: (context, state) =>
+          BlobberDetailView(idOrSlug: state.pathParameters['slug']!),
     ),
 
     GoRoute(

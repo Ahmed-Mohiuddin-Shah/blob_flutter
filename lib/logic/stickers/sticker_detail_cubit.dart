@@ -26,21 +26,19 @@ class StickerDetailState extends Equatable {
     bool? loading,
     bool? busy,
     String? error,
-  }) =>
-      StickerDetailState(
-        sticker: sticker ?? this.sticker,
-        similar: similar ?? this.similar,
-        loading: loading ?? this.loading,
-        busy: busy ?? this.busy,
-        error: error,
-      );
+  }) => StickerDetailState(
+    sticker: sticker ?? this.sticker,
+    similar: similar ?? this.similar,
+    loading: loading ?? this.loading,
+    busy: busy ?? this.busy,
+    error: error,
+  );
 
   @override
   List<Object?> get props => [sticker, similar, loading, busy, error];
 }
 
-class StickerDetailCubit extends Cubit<StickerDetailState>
-    with XSafeEmitMixin {
+class StickerDetailCubit extends Cubit<StickerDetailState> with XSafeEmitMixin {
   StickerDetailCubit(this.idOrSlug) : super(const StickerDetailState());
 
   final String idOrSlug;

@@ -20,10 +20,7 @@ class StickersView extends StatelessWidget {
             title: 'stickers',
             slivers: [
               const SliverToBoxAdapter(
-                child: SectionHeader(
-                  eyebrow: 'Browse',
-                  title: 'stickers',
-                ),
+                child: SectionHeader(eyebrow: 'Browse', title: 'stickers'),
               ),
               if (state.loading)
                 const SliverFillRemaining(
@@ -39,12 +36,13 @@ class StickersView extends StatelessWidget {
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   sliver: SliverGrid(
-                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 180,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 0.78,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 180,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 0.78,
+                        ),
                     delegate: SliverChildBuilderDelegate(
                       (context, i) {
                         if (i == state.items.length) {
@@ -60,13 +58,11 @@ class StickersView extends StatelessWidget {
                         return StickerCard(
                           title: s.displayTitle,
                           imageUrl: s.previewUrl,
-                          onTap: () => context.push(
-                            RouteNames.sticker(s.slug ?? s.id),
-                          ),
+                          onTap: () =>
+                              context.push(RouteNames.sticker(s.slug ?? s.id)),
                         );
                       },
-                      childCount:
-                          state.items.length + (state.hasMore ? 1 : 0),
+                      childCount: state.items.length + (state.hasMore ? 1 : 0),
                     ),
                   ),
                 ),

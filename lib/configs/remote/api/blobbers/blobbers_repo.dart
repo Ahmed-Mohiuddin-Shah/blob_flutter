@@ -17,7 +17,10 @@ abstract final class BlobbersRepo {
         '/api/blobbers',
         queryParameters: {if (cursor != null) 'cursor': cursor},
       );
-      return (data: ApiParse.cursorPage(res.data, BlobberModel.fromJson), error: null);
+      return (
+        data: ApiParse.cursorPage(res.data, BlobberModel.fromJson),
+        error: null,
+      );
     } on DioException catch (e) {
       return (data: null, error: _err(e));
     } catch (e) {
@@ -25,7 +28,9 @@ abstract final class BlobbersRepo {
     }
   }
 
-  static Future<({BlobberModel? data, ApiError? error})> get(String idOrSlug) async {
+  static Future<({BlobberModel? data, ApiError? error})> get(
+    String idOrSlug,
+  ) async {
     try {
       final res = await _public.dioAdapter.get('/api/blobbers/$idOrSlug');
       return (
@@ -88,7 +93,7 @@ abstract final class BlobbersRepo {
   }
 
   static ApiError _err(DioException e) => ApiError(
-        message: e.message ?? 'request failed',
-        statusCode: e.response?.statusCode,
-      );
+    message: e.message ?? 'request failed',
+    statusCode: e.response?.statusCode,
+  );
 }

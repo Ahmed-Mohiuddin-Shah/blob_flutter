@@ -46,10 +46,8 @@ class StickerCard extends StatelessWidget {
                       : CachedNetworkImage(
                           imageUrl: imageUrl!,
                           fit: BoxFit.contain,
-                          errorWidget: (_, __, ___) => const Icon(
-                            Icons.broken_image_outlined,
-                            size: 36,
-                          ),
+                          errorWidget: (_, __, ___) =>
+                              const Icon(Icons.broken_image_outlined, size: 36),
                         ),
                 ),
               ),

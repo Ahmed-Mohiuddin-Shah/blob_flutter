@@ -8,19 +8,13 @@ abstract final class FavouritesRepo {
   static final _api = ApiManager.instance.apiConfigs;
 
   static Future<({CursorPage<Map<String, dynamic>>? data, ApiError? error})>
-      list({String? cursor}) async {
+  list({String? cursor}) async {
     try {
       final res = await _api.dioAdapter.get(
         '/api/favourites',
         queryParameters: {if (cursor != null) 'cursor': cursor},
       );
-      return (
-        data: ApiParse.cursorPage(
-          res.data,
-          (m) => m,
-        ),
-        error: null,
-      );
+      return (data: ApiParse.cursorPage(res.data, (m) => m), error: null);
     } on DioException catch (e) {
       return (data: null, error: _err(e));
     } catch (e) {
@@ -63,7 +57,7 @@ abstract final class FavouritesRepo {
   }
 
   static ApiError _err(DioException e) => ApiError(
-        message: e.message ?? 'request failed',
-        statusCode: e.response?.statusCode,
-      );
+    message: e.message ?? 'request failed',
+    statusCode: e.response?.statusCode,
+  );
 }

@@ -36,25 +36,31 @@ class EditorHostState extends Equatable {
     bool? polling,
     String? error,
     StickerModel? readySticker,
-  }) =>
-      EditorHostState(
-        sticker: sticker ?? this.sticker,
-        document: document ?? this.document,
-        loading: loading ?? this.loading,
-        saving: saving ?? this.saving,
-        polling: polling ?? this.polling,
-        error: error,
-        readySticker: readySticker ?? this.readySticker,
-      );
+  }) => EditorHostState(
+    sticker: sticker ?? this.sticker,
+    document: document ?? this.document,
+    loading: loading ?? this.loading,
+    saving: saving ?? this.saving,
+    polling: polling ?? this.polling,
+    error: error,
+    readySticker: readySticker ?? this.readySticker,
+  );
 
   @override
-  List<Object?> get props =>
-      [sticker, document, loading, saving, polling, error, readySticker];
+  List<Object?> get props => [
+    sticker,
+    document,
+    loading,
+    saving,
+    polling,
+    error,
+    readySticker,
+  ];
 }
 
 class EditorCubit extends Cubit<EditorHostState> with XSafeEmitMixin {
   EditorCubit({required this.idOrSlug, required this.mode})
-      : super(const EditorHostState());
+    : super(const EditorHostState());
 
   final String idOrSlug;
   final EditorMode mode;
@@ -81,11 +87,7 @@ class EditorCubit extends Cubit<EditorHostState> with XSafeEmitMixin {
     }
     final r = await StickersRepo.getByIdOrSlug(targetId);
     xSafeEmit(
-      state.copyWith(
-        loading: false,
-        sticker: r.data,
-        error: r.error?.message,
-      ),
+      state.copyWith(loading: false, sticker: r.data, error: r.error?.message),
     );
   }
 

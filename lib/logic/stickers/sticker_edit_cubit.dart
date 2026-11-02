@@ -22,13 +22,12 @@ class StickerEditState extends Equatable {
     bool? loading,
     bool? busy,
     String? error,
-  }) =>
-      StickerEditState(
-        sticker: sticker ?? this.sticker,
-        loading: loading ?? this.loading,
-        busy: busy ?? this.busy,
-        error: error,
-      );
+  }) => StickerEditState(
+    sticker: sticker ?? this.sticker,
+    loading: loading ?? this.loading,
+    busy: busy ?? this.busy,
+    error: error,
+  );
 
   @override
   List<Object?> get props => [sticker, loading, busy, error];
@@ -43,11 +42,7 @@ class StickerEditCubit extends Cubit<StickerEditState> with XSafeEmitMixin {
     xSafeEmit(state.copyWith(loading: true, error: null));
     final r = await StickersRepo.getByIdOrSlug(idOrSlug);
     xSafeEmit(
-      state.copyWith(
-        loading: false,
-        sticker: r.data,
-        error: r.error?.message,
-      ),
+      state.copyWith(loading: false, sticker: r.data, error: r.error?.message),
     );
   }
 

@@ -24,9 +24,7 @@ class Blobatar extends StatelessWidget {
           fit: BoxFit.cover,
           errorWidget: (_, __, ___) => CircleAvatar(
             radius: size / 2,
-            child: Text(
-              username.isEmpty ? '?' : username[0].toUpperCase(),
-            ),
+            child: Text(username.isEmpty ? '?' : username[0].toUpperCase()),
           ),
         ),
       ),

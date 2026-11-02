@@ -9,10 +9,7 @@ void bootstrapLogging({required bool forwardToMeasure}) {
     // ignore: avoid_print
     print('${record.level.name}: ${record.time}: ${record.message}');
     if (!forwardToMeasure) return;
-    Measure.instance.log(
-      record.message,
-      severity: _severity(record.level),
-    );
+    Measure.instance.log(record.message, severity: _severity(record.level));
   });
 }
 

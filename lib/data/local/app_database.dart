@@ -25,7 +25,7 @@ class WhatsappPackStickers extends Table {
 @DriftDatabase(tables: [WhatsappPackDrafts, WhatsappPackStickers])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
-      : super(executor ?? driftDatabase(name: 'blob_local'));
+    : super(executor ?? driftDatabase(name: 'blob_local'));
 
   @override
   int get schemaVersion => 1;

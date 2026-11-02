@@ -72,13 +72,13 @@ class _EditBodyState extends State<_EditBody> {
                       if (state.error != null) Text(state.error!),
                       TextField(
                         controller: _title,
-                        decoration:
-                            const InputDecoration(labelText: 'Title'),
+                        decoration: const InputDecoration(labelText: 'Title'),
                       ),
                       TextField(
                         controller: _desc,
-                        decoration:
-                            const InputDecoration(labelText: 'Description'),
+                        decoration: const InputDecoration(
+                          labelText: 'Description',
+                        ),
                         maxLines: 3,
                       ),
                       const SizedBox(height: 16),
@@ -101,8 +101,10 @@ class _EditBodyState extends State<_EditBody> {
                       ),
                       TextButton(
                         onPressed: () => context.push(
-                          RouteNames.stickerCompose
-                              .replaceFirst(':slug', widget.idOrSlug),
+                          RouteNames.stickerCompose.replaceFirst(
+                            ':slug',
+                            widget.idOrSlug,
+                          ),
                         ),
                         child: const Text('Open composer'),
                       ),

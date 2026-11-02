@@ -65,27 +65,35 @@ class StickerDetailView extends StatelessWidget {
                         BusyButton(
                           label: 'Favourite',
                           busy: state.busy,
-                          onPressed: () =>
-                              context.read<StickerDetailCubit>().toggleFavourite(),
+                          onPressed: () => context
+                              .read<StickerDetailCubit>()
+                              .toggleFavourite(),
                         ),
                         BusyButton(
                           label: 'Remix',
                           onPressed: () => context.push(
-                            RouteNames.stickerRemix.replaceFirst(':slug', idOrSlug),
+                            RouteNames.stickerRemix.replaceFirst(
+                              ':slug',
+                              idOrSlug,
+                            ),
                           ),
                         ),
                         BusyButton(
                           label: 'Compose',
                           onPressed: () => context.push(
-                            RouteNames.stickerCompose
-                                .replaceFirst(':slug', idOrSlug),
+                            RouteNames.stickerCompose.replaceFirst(
+                              ':slug',
+                              idOrSlug,
+                            ),
                           ),
                         ),
                         BusyButton(
                           label: 'Edit',
                           onPressed: () => context.push(
-                            RouteNames.stickerEdit
-                                .replaceFirst(':slug', idOrSlug),
+                            RouteNames.stickerEdit.replaceFirst(
+                              ':slug',
+                              idOrSlug,
+                            ),
                           ),
                         ),
                         BusyButton(
@@ -107,24 +115,21 @@ class StickerDetailView extends StatelessWidget {
                     sliver: SliverGrid(
                       gridDelegate:
                           const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 160,
-                        childAspectRatio: 0.8,
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                      ),
-                      delegate: SliverChildBuilderDelegate(
-                        (context, i) {
-                          final item = state.similar[i];
-                          return StickerCard(
-                            title: item.displayTitle,
-                            imageUrl: item.previewUrl,
-                            onTap: () => context.push(
-                              RouteNames.sticker(item.slug ?? item.id),
-                            ),
-                          );
-                        },
-                        childCount: state.similar.length,
-                      ),
+                            maxCrossAxisExtent: 160,
+                            childAspectRatio: 0.8,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                          ),
+                      delegate: SliverChildBuilderDelegate((context, i) {
+                        final item = state.similar[i];
+                        return StickerCard(
+                          title: item.displayTitle,
+                          imageUrl: item.previewUrl,
+                          onTap: () => context.push(
+                            RouteNames.sticker(item.slug ?? item.id),
+                          ),
+                        );
+                      }, childCount: state.similar.length),
                     ),
                   ),
                 ],

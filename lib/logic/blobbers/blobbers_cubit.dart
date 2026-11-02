@@ -19,12 +19,11 @@ class BlobbersState extends Equatable {
     List<BlobberModel>? items,
     bool? loading,
     String? error,
-  }) =>
-      BlobbersState(
-        items: items ?? this.items,
-        loading: loading ?? this.loading,
-        error: error,
-      );
+  }) => BlobbersState(
+    items: items ?? this.items,
+    loading: loading ?? this.loading,
+    error: error,
+  );
 
   @override
   List<Object?> get props => [items, loading, error];

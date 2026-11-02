@@ -11,11 +11,7 @@ import 'package:go_router/go_router.dart';
 export 'package:blob_flutter/logic/editor/editor_cubit.dart' show EditorMode;
 
 class EditorHostView extends StatelessWidget {
-  const EditorHostView({
-    super.key,
-    required this.idOrSlug,
-    required this.mode,
-  });
+  const EditorHostView({super.key, required this.idOrSlug, required this.mode});
 
   final String idOrSlug;
   final EditorMode mode;
@@ -25,8 +21,7 @@ class EditorHostView extends StatelessWidget {
     return AuthGate(
       title: mode.name,
       child: BlocProvider(
-        create: (_) =>
-            EditorCubit(idOrSlug: idOrSlug, mode: mode)..prepare(),
+        create: (_) => EditorCubit(idOrSlug: idOrSlug, mode: mode)..prepare(),
         child: const _EditorBody(),
       ),
     );
@@ -50,7 +45,12 @@ class _EditorBody extends StatelessWidget {
           final s = state.readySticker!;
           return Scaffold(
             body: Padding(
-              padding: EdgeInsets.fromLTRB(24, pad.top + 24, 24, pad.bottom + 24),
+              padding: EdgeInsets.fromLTRB(
+                24,
+                pad.top + 24,
+                24,
+                pad.bottom + 24,
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -58,9 +58,8 @@ class _EditorBody extends StatelessWidget {
                   const SizedBox(height: 16),
                   BusyButton(
                     label: 'View sticker',
-                    onPressed: () => context.go(
-                      RouteNames.sticker(s.slug ?? s.id),
-                    ),
+                    onPressed: () =>
+                        context.go(RouteNames.sticker(s.slug ?? s.id)),
                   ),
                   const SizedBox(height: 8),
                   BusyButton(
@@ -86,7 +85,10 @@ class _EditorBody extends StatelessWidget {
               if (state.error != null)
                 Padding(
                   padding: const EdgeInsets.all(8),
-                  child: Text(state.error!, style: const TextStyle(color: Colors.red)),
+                  child: Text(
+                    state.error!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
               const Expanded(flex: 1, child: KeyboardTray()),
               Expanded(

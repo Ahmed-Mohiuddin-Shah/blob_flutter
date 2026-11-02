@@ -19,9 +19,7 @@ class SplashView extends StatelessWidget {
         child: Scaffold(
           body: Container(
             width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: AppColors.accentGradient,
-            ),
+            decoration: const BoxDecoration(gradient: AppColors.accentGradient),
             child: BlocBuilder<SplashCubit, SplashState>(
               builder: (context, state) {
                 if (state.phase == SplashPhase.forceUpdate) {

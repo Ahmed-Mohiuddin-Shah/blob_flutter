@@ -8,7 +8,8 @@ abstract class WhatsappStickersExporterPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static WhatsappStickersExporterPlatform _instance = MethodChannelWhatsappStickersExporter();
+  static WhatsappStickersExporterPlatform _instance =
+      MethodChannelWhatsappStickersExporter();
 
   /// The default instance of [WhatsappStickersExporterPlatform] to use.
   ///

@@ -39,9 +39,8 @@ class BlobbersView extends StatelessWidget {
                       ),
                       title: Text(b.displayTitle),
                       subtitle: Text(b.bio ?? ''),
-                      onTap: () => context.push(
-                        RouteNames.blobber(b.slug ?? b.id),
-                      ),
+                      onTap: () =>
+                          context.push(RouteNames.blobber(b.slug ?? b.id)),
                     );
                   },
                 ),
@@ -83,7 +82,9 @@ class BlobberDetailView extends StatelessWidget {
               const SpiverLoader()
             else if (b == null)
               SliverFillRemaining(
-                child: Center(child: Text(snap.data?.error?.message ?? 'Missing')),
+                child: Center(
+                  child: Text(snap.data?.error?.message ?? 'Missing'),
+                ),
               )
             else
               SliverToBoxAdapter(
@@ -91,10 +92,15 @@ class BlobberDetailView extends StatelessWidget {
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     children: [
-                      Blobatar(username: b.username ?? b.slug ?? b.id, size: 96),
+                      Blobatar(
+                        username: b.username ?? b.slug ?? b.id,
+                        size: 96,
+                      ),
                       const SizedBox(height: 12),
-                      Text(b.displayTitle,
-                          style: Theme.of(context).textTheme.headlineSmall),
+                      Text(
+                        b.displayTitle,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
                       if (b.bio != null) Text(b.bio!),
                     ],
                   ),
@@ -123,10 +129,7 @@ class BlobberCmsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AuthGate(
-      title: 'blobber cms',
-      child: _BlobberCmsBody(),
-    );
+    return const AuthGate(title: 'blobber cms', child: _BlobberCmsBody());
   }
 }
 
@@ -166,8 +169,7 @@ class _BlobberCmsBodyState extends State<_BlobberCmsBody> {
                 const SizedBox(height: 16),
                 BusyButton(
                   label: 'Save',
-                  onPressed: () =>
-                      BlobbersRepo.patchMe(bio: bio.text.trim()),
+                  onPressed: () => BlobbersRepo.patchMe(bio: bio.text.trim()),
                 ),
                 const SizedBox(height: 12),
                 BusyButton(

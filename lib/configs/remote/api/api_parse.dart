@@ -18,7 +18,9 @@ abstract final class ApiParse {
     dynamic data,
     T Function(Map<String, dynamic>) fromJson,
   ) {
-    final map = data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{};
+    final map = data is Map
+        ? Map<String, dynamic>.from(data)
+        : <String, dynamic>{};
     final raw = map['items'] ?? map['data'] ?? const [];
     final list = <T>[];
     if (raw is List) {
@@ -28,9 +30,6 @@ abstract final class ApiParse {
         }
       }
     }
-    return CursorPage(
-      items: list,
-      nextCursor: map['nextCursor'] as String?,
-    );
+    return CursorPage(items: list, nextCursor: map['nextCursor'] as String?);
   }
 }

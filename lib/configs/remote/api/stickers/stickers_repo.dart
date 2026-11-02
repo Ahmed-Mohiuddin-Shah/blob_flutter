@@ -106,7 +106,10 @@ abstract final class StickersRepo {
           if (description != null) 'description': description,
         },
       );
-      return (data: StickerModel.fromJson(Map<String, dynamic>.from(res.data as Map)), error: null);
+      return (
+        data: StickerModel.fromJson(Map<String, dynamic>.from(res.data as Map)),
+        error: null,
+      );
     } on DioException catch (e) {
       return (data: null, error: _err(e));
     } catch (e) {
@@ -126,7 +129,7 @@ abstract final class StickersRepo {
   }
 
   static ApiError _err(DioException e) => ApiError(
-        message: e.message ?? 'request failed',
-        statusCode: e.response?.statusCode,
-      );
+    message: e.message ?? 'request failed',
+    statusCode: e.response?.statusCode,
+  );
 }

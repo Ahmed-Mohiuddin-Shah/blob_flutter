@@ -28,21 +28,21 @@ class StickersState extends Equatable {
     bool? loadingMore,
     String? error,
     bool clearCursor = false,
-  }) =>
-      StickersState(
-        items: items ?? this.items,
-        nextCursor: clearCursor ? null : (nextCursor ?? this.nextCursor),
-        loading: loading ?? this.loading,
-        loadingMore: loadingMore ?? this.loadingMore,
-        error: error,
-      );
+  }) => StickersState(
+    items: items ?? this.items,
+    nextCursor: clearCursor ? null : (nextCursor ?? this.nextCursor),
+    loading: loading ?? this.loading,
+    loadingMore: loadingMore ?? this.loadingMore,
+    error: error,
+  );
 
   @override
   List<Object?> get props => [items, nextCursor, loading, loadingMore, error];
 }
 
 class StickersCubit extends Cubit<StickersState> with XSafeEmitMixin {
-  StickersCubit({this.mine = false, this.status}) : super(const StickersState());
+  StickersCubit({this.mine = false, this.status})
+    : super(const StickersState());
 
   final bool mine;
   final String? status;

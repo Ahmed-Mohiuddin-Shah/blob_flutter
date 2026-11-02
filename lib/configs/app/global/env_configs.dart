@@ -23,9 +23,7 @@ abstract final class EnvConfigs {
   static String get(String name, {String? fallback}) {
     final flavor = appFlavor;
     if (flavor == null || flavor.isEmpty) {
-      throw StateError(
-        'App flavor is not set. Run with --flavor dev|prod.',
-      );
+      throw StateError('App flavor is not set. Run with --flavor dev|prod.');
     }
     final key = '${flavor.toUpperCase()}_$name';
     final value = dotenv.maybeGet(key)?.trim();

@@ -17,7 +17,10 @@ abstract final class PrintsRepo {
         '/api/sheets',
         queryParameters: {if (cursor != null) 'cursor': cursor},
       );
-      return (data: ApiParse.cursorPage(res.data, SheetModel.fromJson), error: null);
+      return (
+        data: ApiParse.cursorPage(res.data, SheetModel.fromJson),
+        error: null,
+      );
     } on DioException catch (e) {
       return (data: null, error: _err(e));
     } catch (e) {
@@ -33,7 +36,10 @@ abstract final class PrintsRepo {
         '/api/packs',
         queryParameters: {if (cursor != null) 'cursor': cursor},
       );
-      return (data: ApiParse.cursorPage(res.data, PackModel.fromJson), error: null);
+      return (
+        data: ApiParse.cursorPage(res.data, PackModel.fromJson),
+        error: null,
+      );
     } on DioException catch (e) {
       return (data: null, error: _err(e));
     } catch (e) {
@@ -41,7 +47,9 @@ abstract final class PrintsRepo {
     }
   }
 
-  static Future<({SheetModel? data, ApiError? error})> getSheet(String id) async {
+  static Future<({SheetModel? data, ApiError? error})> getSheet(
+    String id,
+  ) async {
     try {
       final res = await _public.dioAdapter.get('/api/sheets/$id');
       return (
@@ -73,7 +81,10 @@ abstract final class PrintsRepo {
     required String title,
   }) async {
     try {
-      final res = await _auth.dioAdapter.post('/api/sheets', data: {'title': title});
+      final res = await _auth.dioAdapter.post(
+        '/api/sheets',
+        data: {'title': title},
+      );
       return (
         data: SheetModel.fromJson(Map<String, dynamic>.from(res.data as Map)),
         error: null,
@@ -89,7 +100,10 @@ abstract final class PrintsRepo {
     required String title,
   }) async {
     try {
-      final res = await _auth.dioAdapter.post('/api/packs', data: {'title': title});
+      final res = await _auth.dioAdapter.post(
+        '/api/packs',
+        data: {'title': title},
+      );
       return (
         data: PackModel.fromJson(Map<String, dynamic>.from(res.data as Map)),
         error: null,
@@ -102,12 +116,14 @@ abstract final class PrintsRepo {
   }
 
   static String mediaUrl(String kind, String id, {required bool sheet}) {
-    final base = sheet ? '/api/sheets/$id/media/$kind' : '/api/packs/$id/media/$kind';
+    final base = sheet
+        ? '/api/sheets/$id/media/$kind'
+        : '/api/packs/$id/media/$kind';
     return ApiParse.absoluteUrl(base);
   }
 
   static ApiError _err(DioException e) => ApiError(
-        message: e.message ?? 'request failed',
-        statusCode: e.response?.statusCode,
-      );
+    message: e.message ?? 'request failed',
+    statusCode: e.response?.statusCode,
+  );
 }

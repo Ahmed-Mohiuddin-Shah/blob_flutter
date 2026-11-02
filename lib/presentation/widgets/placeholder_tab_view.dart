@@ -36,16 +36,15 @@ class PlaceholderTabView extends StatelessWidget {
             Text(
               title.toLowerCase(),
               style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.w300,
-                    color: AppColors.foregroundLight,
-                  ),
+                fontWeight: FontWeight.w300,
+                color: AppColors.foregroundLight,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'Coming soon',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.secondaryLight,
-                  ),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: AppColors.secondaryLight),
             ),
           ],
         ),

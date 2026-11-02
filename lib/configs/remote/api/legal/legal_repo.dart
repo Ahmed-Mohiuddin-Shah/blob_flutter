@@ -6,11 +6,15 @@ import 'package:dio/dio.dart';
 abstract final class LegalRepo {
   static final _api = ApiManagerPublic.instance.apiConfigs;
 
-  static Future<({LegalDocument? data, ApiError? error})> get(String slug) async {
+  static Future<({LegalDocument? data, ApiError? error})> get(
+    String slug,
+  ) async {
     try {
       final res = await _api.dioAdapter.get('/api/legal/$slug');
       return (
-        data: LegalDocument.fromJson(Map<String, dynamic>.from(res.data as Map)),
+        data: LegalDocument.fromJson(
+          Map<String, dynamic>.from(res.data as Map),
+        ),
         error: null,
       );
     } on DioException catch (e) {

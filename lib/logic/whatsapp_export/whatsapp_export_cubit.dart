@@ -27,14 +27,13 @@ class WhatsappExportState extends Equatable {
     Set<String>? selected,
     bool? busy,
     String? error,
-  }) =>
-      WhatsappExportState(
-        drafts: drafts ?? this.drafts,
-        candidates: candidates ?? this.candidates,
-        selected: selected ?? this.selected,
-        busy: busy ?? this.busy,
-        error: error,
-      );
+  }) => WhatsappExportState(
+    drafts: drafts ?? this.drafts,
+    candidates: candidates ?? this.candidates,
+    selected: selected ?? this.selected,
+    busy: busy ?? this.busy,
+    error: error,
+  );
 
   @override
   List<Object?> get props => [drafts, candidates, selected, busy, error];
@@ -81,7 +80,9 @@ class WhatsappExportCubit extends Cubit<WhatsappExportState>
     }
     xSafeEmit(state.copyWith(busy: true, error: null));
     try {
-      final packId = await _db.into(_db.whatsappPackDrafts).insert(
+      final packId = await _db
+          .into(_db.whatsappPackDrafts)
+          .insert(
             WhatsappPackDraftsCompanion.insert(
               identifier: identifier,
               name: name,

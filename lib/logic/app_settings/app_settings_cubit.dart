@@ -17,7 +17,7 @@ class AppSettingsState extends Equatable {
 
 class AppSettingsCubit extends Cubit<AppSettingsState> with XSafeEmitMixin {
   AppSettingsCubit()
-      : super(AppSettingsState(navRailSide: sharedPrefs.navRailSide));
+    : super(AppSettingsState(navRailSide: sharedPrefs.navRailSide));
 
   Future<void> setNavRailSide(NavRailSide side) async {
     await sharedPrefs.setNavRailSide(side);

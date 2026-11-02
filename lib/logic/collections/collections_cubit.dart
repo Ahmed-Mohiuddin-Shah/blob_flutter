@@ -25,14 +25,13 @@ class CollectionsState extends Equatable {
     bool? loading,
     bool? busy,
     String? error,
-  }) =>
-      CollectionsState(
-        items: items ?? this.items,
-        nextCursor: nextCursor ?? this.nextCursor,
-        loading: loading ?? this.loading,
-        busy: busy ?? this.busy,
-        error: error,
-      );
+  }) => CollectionsState(
+    items: items ?? this.items,
+    nextCursor: nextCursor ?? this.nextCursor,
+    loading: loading ?? this.loading,
+    busy: busy ?? this.busy,
+    error: error,
+  );
 
   @override
   List<Object?> get props => [items, nextCursor, loading, busy, error];

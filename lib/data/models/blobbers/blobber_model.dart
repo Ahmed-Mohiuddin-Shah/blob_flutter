@@ -19,9 +19,7 @@ class BlobberModel {
   final String? bio;
 
   String get displayTitle =>
-      displayName?.isNotEmpty == true
-          ? displayName!
-          : (username ?? slug ?? id);
+      displayName?.isNotEmpty == true ? displayName! : (username ?? slug ?? id);
 
   factory BlobberModel.fromJson(Map<String, dynamic> json) =>
       _$BlobberModelFromJson(json);
