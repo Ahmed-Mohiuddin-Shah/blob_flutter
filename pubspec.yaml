@@ -1,0 +1,59 @@
+name: blob_flutter
+description: "BLOB member Flutter client"
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  bloc: ^9.2.1
+  flutter_bloc: ^9.1.1
+  equatable: ^2.1.0
+  go_router: ^17.5.0
+  dio: ^5.11.0
+  shared_preferences: ^2.5.5
+  flutter_secure_storage: ^9.2.4
+  flutter_dotenv: ^6.0.1
+  cached_network_image: ^3.4.1
+  drift: ^2.28.1
+  drift_flutter: ^0.2.4
+  sqlite3_flutter_libs: ^0.5.32
+  measure_flutter: ^0.9.1
+  logging: ^1.3.0
+  flutter_appauth: ^9.0.0
+  blob_editor: ^0.1.0
+  # pub 1.0.0 lacks AGP namespace — vendored + patched under packages/
+  whatsapp_stickers_exporter:
+    path: packages/whatsapp_stickers_exporter
+  flutter_svg: ^2.3.0
+  json_annotation: ^4.9.0
+  package_info_plus: ^8.3.0
+  path_provider: ^2.1.5
+  path: ^1.9.1
+  image: ^4.5.4
+  url_launcher: ^6.3.1
+  connectivity_plus: ^6.1.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.15
+  flutter_gen_runner: ^5.10.0
+  json_serializable: ^6.9.5
+  drift_dev: ^2.28.1
+
+flutter_gen:
+  output: lib/gen/
+  integrations:
+    flutter_svg: true
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
+    - assets/svgs/lucide/
