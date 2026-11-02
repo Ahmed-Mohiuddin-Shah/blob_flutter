@@ -10,7 +10,7 @@ MeModel _$MeModelFromJson(Map<String, dynamic> json) => MeModel(
   id: json['id'] as String,
   username: json['username'] as String?,
   role: json['role'] as String?,
-  accountStatus: json['account_status'] as String?,
+  accountStatus: json['accountStatus'] as String?,
   appGroup: json['appGroup'] as String?,
 );
 
@@ -18,6 +18,6 @@ Map<String, dynamic> _$MeModelToJson(MeModel instance) => <String, dynamic>{
   'id': instance.id,
   'username': instance.username,
   'role': instance.role,
-  'account_status': instance.accountStatus,
+  'accountStatus': instance.accountStatus,
   'appGroup': instance.appGroup,
 };

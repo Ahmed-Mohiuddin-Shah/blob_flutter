@@ -3,11 +3,22 @@ import 'package:blob_flutter/configs/routes/pending_deep_link.dart';
 import 'package:blob_flutter/configs/routes/route_names.dart';
 import 'package:blob_flutter/configs/utils/deeplinks/deep_link_mapper.dart';
 import 'package:blob_flutter/logic/home/home_navigation_cubit.dart';
+import 'package:blob_flutter/presentation/blobbers/blobbers_view.dart';
+import 'package:blob_flutter/presentation/collections/collections_view.dart';
+import 'package:blob_flutter/presentation/editor/editor_host_view.dart';
+import 'package:blob_flutter/presentation/favourites/favourites_view.dart';
+import 'package:blob_flutter/presentation/legal/legal_view.dart';
+import 'package:blob_flutter/presentation/prints/prints_view.dart';
+import 'package:blob_flutter/presentation/profile/profile_view.dart';
+import 'package:blob_flutter/presentation/search/search_view.dart';
 import 'package:blob_flutter/presentation/settings/settings_view.dart';
 import 'package:blob_flutter/presentation/shell/adaptive_nav_shell.dart';
 import 'package:blob_flutter/presentation/splash/splash_view.dart';
-import 'package:blob_flutter/presentation/widgets/placeholder_detail_view.dart';
-import 'package:blob_flutter/presentation/widgets/placeholder_tab_view.dart';
+import 'package:blob_flutter/presentation/stickers/sticker_detail_view.dart';
+import 'package:blob_flutter/presentation/stickers/sticker_edit_view.dart';
+import 'package:blob_flutter/presentation/stickers/stickers_view.dart';
+import 'package:blob_flutter/presentation/stickers/upload_gate_view.dart';
+import 'package:blob_flutter/presentation/whatsapp/whatsapp_export_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -15,16 +26,6 @@ import 'package:go_router/go_router.dart';
 NoTransitionPage<void> _tabPage(Widget child) =>
     NoTransitionPage<void>(child: child);
 
-GoRouterPageBuilder _detail(String title, {String? param}) {
-  return (context, state) {
-    final value = param == null ? null : state.pathParameters[param];
-    return MaterialPage<void>(
-      child: PlaceholderDetailView(title: title, subtitle: value),
-    );
-  };
-}
-
-/// Zitadel / AppAuth callback — must never be handled as an app route.
 bool _isOAuthCallback(GoRouterState state) {
   final raw = state.uri.toString();
   final path = state.uri.path;
@@ -38,8 +39,6 @@ final GoRouter router = GoRouter(
   navigatorKey: navigatorKey,
   initialLocation: RouteNames.splash,
   redirect: (context, state) {
-    // AppAuth owns this URL. Bounce to a real route so go_router doesn't 404;
-    // the plugin still completes via RedirectUriReceiverActivity when it can.
     if (_isOAuthCallback(state)) {
       return PendingDeepLink.homeReady ? RouteNames.home : RouteNames.splash;
     }
@@ -47,12 +46,10 @@ final GoRouter router = GoRouter(
     final uri = state.uri;
     final mapped = DeepLinkMapper.toAppLocation(uri);
 
-    // `/` and empty → home (or splash until boot).
     if (uri.path.isEmpty || uri.path == '/') {
       return PendingDeepLink.homeReady ? RouteNames.home : RouteNames.splash;
     }
 
-    // Cold-start App Link before splash finishes → stash, show splash.
     if (!PendingDeepLink.homeReady &&
         state.matchedLocation != RouteNames.splash &&
         mapped != RouteNames.splash) {
@@ -60,10 +57,7 @@ final GoRouter router = GoRouter(
       return RouteNames.splash;
     }
 
-    // Remap web-only / aliases.
-    final current = uri.hasQuery
-        ? '${uri.path}?${uri.query}'
-        : uri.path;
+    final current = uri.hasQuery ? '${uri.path}?${uri.query}' : uri.path;
     if (mapped != current &&
         mapped != state.matchedLocation &&
         state.matchedLocation != RouteNames.splash) {
@@ -71,19 +65,7 @@ final GoRouter router = GoRouter(
     }
     return null;
   },
-  errorBuilder: (context, state) {
-    // Never leave the user on Page Not Found — especially OAuth misfires.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.mounted) {
-        GoRouter.of(context).go(
-          PendingDeepLink.homeReady ? RouteNames.home : RouteNames.splash,
-        );
-      }
-    });
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
-  },
+  // go_router allows only one of onException / errorBuilder / errorPageBuilder.
   onException: (context, state, router) {
     router.go(PendingDeepLink.homeReady ? RouteNames.home : RouteNames.splash);
   },
@@ -93,7 +75,6 @@ final GoRouter router = GoRouter(
       redirect: (context, state) =>
           PendingDeepLink.homeReady ? RouteNames.home : RouteNames.splash,
     ),
-    // Swallow if Flutter deep linking strips the custom scheme.
     GoRoute(
       path: '/oauthredirect',
       redirect: (context, state) =>
@@ -112,39 +93,36 @@ final GoRouter router = GoRouter(
           path: RouteNames.stickers,
           pageBuilder: (context, state) {
             context.read<HomeNavigationCubit>().select(HomeTab.stickers);
-            return _tabPage(const PlaceholderTabView(title: 'Stickers'));
+            return _tabPage(const StickersView());
           },
         ),
         GoRoute(
           path: RouteNames.blobbers,
           pageBuilder: (context, state) {
             context.read<HomeNavigationCubit>().select(HomeTab.blobbers);
-            return _tabPage(const PlaceholderTabView(title: 'Blobbers'));
+            return _tabPage(const BlobbersView());
           },
         ),
         GoRoute(
           path: RouteNames.prints,
           pageBuilder: (context, state) {
             context.read<HomeNavigationCubit>().select(HomeTab.prints);
-            return _tabPage(const PlaceholderTabView(title: 'Prints'));
+            return _tabPage(const PrintsView());
           },
         ),
         GoRoute(
           path: RouteNames.collections,
           pageBuilder: (context, state) {
             context.read<HomeNavigationCubit>().select(HomeTab.collections);
-            return _tabPage(const PlaceholderTabView(title: 'Collections'));
+            return _tabPage(const CollectionsView());
           },
         ),
         GoRoute(
           path: RouteNames.search,
           pageBuilder: (context, state) {
             context.read<HomeNavigationCubit>().select(HomeTab.search);
-            final q = state.uri.queryParameters['q'];
             return _tabPage(
-              PlaceholderTabView(
-                title: q == null || q.isEmpty ? 'Search' : 'Search: $q',
-              ),
+              SearchView(initialQuery: state.uri.queryParameters['q']),
             );
           },
         ),
@@ -153,77 +131,127 @@ final GoRouter router = GoRouter(
 
     GoRoute(
       path: '/stickers/:slug/edit',
-      pageBuilder: _detail('Edit sticker', param: 'slug'),
+      builder: (context, state) => StickerEditView(
+        idOrSlug: state.pathParameters['slug']!,
+      ),
     ),
     GoRoute(
       path: '/stickers/:slug/compose',
-      pageBuilder: _detail('Compose', param: 'slug'),
+      builder: (context, state) => EditorHostView(
+        idOrSlug: state.pathParameters['slug']!,
+        mode: EditorMode.compose,
+      ),
     ),
     GoRoute(
       path: '/stickers/:slug/remix',
-      pageBuilder: _detail('Remix', param: 'slug'),
+      builder: (context, state) => EditorHostView(
+        idOrSlug: state.pathParameters['slug']!,
+        mode: EditorMode.remix,
+      ),
     ),
     GoRoute(
       path: '/stickers/:slug',
-      pageBuilder: _detail('Sticker', param: 'slug'),
+      builder: (context, state) => StickerDetailView(
+        idOrSlug: state.pathParameters['slug']!,
+      ),
     ),
 
     GoRoute(
       path: RouteNames.collectionsNew,
-      pageBuilder: _detail('New collection'),
+      builder: (context, state) => const CollectionCreateView(),
     ),
     GoRoute(
       path: '/collections/:slug',
-      pageBuilder: _detail('Collection', param: 'slug'),
+      builder: (context, state) => CollectionDetailView(
+        slug: state.pathParameters['slug']!,
+      ),
     ),
 
     GoRoute(
       path: RouteNames.printsSheetsNew,
-      pageBuilder: _detail('New sheet'),
+      builder: (context, state) => const PrintCreateView(kind: 'sheet'),
     ),
     GoRoute(
       path: RouteNames.printsPacksNew,
-      pageBuilder: _detail('New pack'),
+      builder: (context, state) => const PrintCreateView(kind: 'pack'),
     ),
     GoRoute(
       path: '/prints/sheets/:slug',
-      pageBuilder: _detail('Sheet', param: 'slug'),
+      builder: (context, state) => PrintDetailView(
+        id: state.pathParameters['slug']!,
+        isSheet: true,
+      ),
     ),
     GoRoute(
       path: '/prints/packs/:slug',
-      pageBuilder: _detail('Pack', param: 'slug'),
+      builder: (context, state) => PrintDetailView(
+        id: state.pathParameters['slug']!,
+        isSheet: false,
+      ),
     ),
 
     GoRoute(
       path: '/blobbers/id/:id',
-      pageBuilder: _detail('Blobber', param: 'id'),
+      builder: (context, state) => BlobberDetailView(
+        idOrSlug: state.pathParameters['id']!,
+      ),
     ),
     GoRoute(
       path: '/blobbers/:slug',
-      pageBuilder: _detail('Blobber', param: 'slug'),
+      builder: (context, state) => BlobberDetailView(
+        idOrSlug: state.pathParameters['slug']!,
+      ),
     ),
 
-    GoRoute(path: RouteNames.about, pageBuilder: _detail('About')),
-    GoRoute(path: RouteNames.terms, pageBuilder: _detail('Terms')),
-    GoRoute(path: RouteNames.privacy, pageBuilder: _detail('Privacy')),
-    GoRoute(path: RouteNames.upload, pageBuilder: _detail('Upload')),
-    GoRoute(path: RouteNames.profile, pageBuilder: _detail('Profile')),
-    GoRoute(path: RouteNames.favourites, pageBuilder: _detail('Favourites')),
-    GoRoute(path: RouteNames.uploads, pageBuilder: _detail('Uploads')),
-    GoRoute(path: RouteNames.profilePrints, pageBuilder: _detail('My prints')),
+    GoRoute(
+      path: RouteNames.about,
+      builder: (context, state) => const LegalView(slug: 'about'),
+    ),
+    GoRoute(
+      path: RouteNames.terms,
+      builder: (context, state) => const LegalView(slug: 'terms'),
+    ),
+    GoRoute(
+      path: RouteNames.privacy,
+      builder: (context, state) => const LegalView(slug: 'privacy'),
+    ),
+    GoRoute(
+      path: RouteNames.upload,
+      builder: (context, state) => const UploadGateView(),
+    ),
+    GoRoute(
+      path: RouteNames.profile,
+      builder: (context, state) => const ProfileView(),
+    ),
+    GoRoute(
+      path: RouteNames.favourites,
+      builder: (context, state) => const FavouritesView(),
+    ),
+    GoRoute(
+      path: RouteNames.uploads,
+      builder: (context, state) => const LibraryView(title: 'uploads'),
+    ),
+    GoRoute(
+      path: RouteNames.profilePrints,
+      builder: (context, state) =>
+          const LibraryView(title: 'prints', status: 'approved'),
+    ),
     GoRoute(
       path: RouteNames.settings,
       builder: (context, state) => const SettingsView(),
     ),
     GoRoute(
       path: RouteNames.profileBlobber,
-      pageBuilder: _detail('Blobber CMS'),
+      builder: (context, state) => const BlobberCmsView(),
     ),
     GoRoute(
       path: RouteNames.profileBlobberAssociate,
-      pageBuilder: _detail('Associate blobber'),
+      builder: (context, state) => const BlobberAssociateView(),
     ),
-
+    GoRoute(
+      path: '/whatsapp-export',
+      builder: (context, state) => const WhatsappExportView(),
+    ),
     GoRoute(
       path: '/settings',
       redirect: (context, state) => RouteNames.settings,

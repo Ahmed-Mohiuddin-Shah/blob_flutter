@@ -23,4 +23,27 @@ abstract final class MeRepo {
       return (data: null, error: ApiError(message: e.toString()));
     }
   }
+
+  static Future<({MeModel? data, ApiError? error})> patchUsername(
+    String username,
+  ) async {
+    try {
+      final Response response = await _api.dioAdapter.patch(
+        '/api/me',
+        data: {'username': username},
+      );
+      final map = Map<String, dynamic>.from(response.data as Map);
+      return (data: MeModel.fromJson(map), error: null);
+    } on DioException catch (e) {
+      return (
+        data: null,
+        error: ApiError(
+          message: e.message ?? 'patch me failed',
+          statusCode: e.response?.statusCode,
+        ),
+      );
+    } catch (e) {
+      return (data: null, error: ApiError(message: e.toString()));
+    }
+  }
 }

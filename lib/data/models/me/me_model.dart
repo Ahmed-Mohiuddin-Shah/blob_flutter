@@ -15,7 +15,6 @@ class MeModel {
   final String id;
   final String? username;
   final String? role;
-  @JsonKey(name: 'account_status')
   final String? accountStatus;
   final String? appGroup;
 
