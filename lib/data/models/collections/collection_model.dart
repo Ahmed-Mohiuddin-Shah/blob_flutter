@@ -22,8 +22,17 @@ class CollectionModel {
 
   String get displayTitle => title?.isNotEmpty == true ? title! : (slug ?? id);
 
-  factory CollectionModel.fromJson(Map<String, dynamic> json) =>
-      _$CollectionModelFromJson(json);
+  factory CollectionModel.fromJson(Map<String, dynamic> json) {
+    final mapped = Map<String, dynamic>.from(json);
+    mapped['id'] = '${json['id']}';
+    mapped['title'] ??= json['name'] ?? json['title'];
+    mapped['itemCount'] ??= json['stickerCount'] ?? json['itemCount'];
+    final thumbs = json['previewThumbUrls'];
+    if (thumbs is List && thumbs.isNotEmpty) {
+      mapped['coverUrl'] ??= thumbs.first?.toString();
+    }
+    return _$CollectionModelFromJson(mapped);
+  }
 
   Map<String, dynamic> toJson() => _$CollectionModelToJson(this);
 }

@@ -20,4 +20,9 @@ void main() {
       'https://example.com/x',
     );
   });
+
+  test('ApiParse.absoluteUrl nulls empty', () {
+    expect(ApiParse.absoluteUrl(null), isNull);
+    expect(ApiParse.absoluteUrl(''), isNull);
+  });
 }

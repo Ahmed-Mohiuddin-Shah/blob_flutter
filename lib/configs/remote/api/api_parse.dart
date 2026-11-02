@@ -4,8 +4,8 @@ import 'package:blob_flutter/data/models/common/cursor_page.dart';
 abstract final class ApiParse {
   const ApiParse._();
 
-  static String absoluteUrl(String? pathOrUrl) {
-    if (pathOrUrl == null || pathOrUrl.isEmpty) return '';
+  static String? absoluteUrl(String? pathOrUrl) {
+    if (pathOrUrl == null || pathOrUrl.isEmpty) return null;
     if (pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')) {
       return pathOrUrl;
     }

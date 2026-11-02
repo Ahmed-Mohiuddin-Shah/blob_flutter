@@ -21,14 +21,16 @@ abstract final class KeyboardRepo {
         },
       );
       final page = ApiParse.cursorPage(res.data, (m) {
-        final chat = ApiParse.absoluteUrl(
-          m['chatUrl'] as String? ?? m['chat'] as String?,
-        );
         return StickerModel(
           id: '${m['id']}',
           title: m['title'] as String?,
           slug: m['slug'] as String?,
-          chatUrl: chat.isEmpty ? null : chat,
+          chatUrl: ApiParse.absoluteUrl(
+            m['chatUrl'] as String? ?? m['chat'] as String?,
+          ),
+          thumbnailUrl: ApiParse.absoluteUrl(
+            m['thumbUrl'] as String? ?? m['thumbnailUrl'] as String?,
+          ),
         );
       });
       return (data: page, error: null);

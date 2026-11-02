@@ -58,8 +58,9 @@ class StickersView extends StatelessWidget {
                         return StickerCard(
                           title: s.displayTitle,
                           imageUrl: s.previewUrl,
+                          // Prefer id — slug detail currently 500s on API.
                           onTap: () =>
-                              context.push(RouteNames.sticker(s.slug ?? s.id)),
+                              context.push(RouteNames.sticker(s.id)),
                         );
                       },
                       childCount: state.items.length + (state.hasMore ? 1 : 0),

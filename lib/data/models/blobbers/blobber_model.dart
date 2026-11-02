@@ -21,8 +21,18 @@ class BlobberModel {
   String get displayTitle =>
       displayName?.isNotEmpty == true ? displayName! : (username ?? slug ?? id);
 
-  factory BlobberModel.fromJson(Map<String, dynamic> json) =>
-      _$BlobberModelFromJson(json);
+  factory BlobberModel.fromJson(Map<String, dynamic> json) {
+    final mapped = Map<String, dynamic>.from(json);
+    mapped['id'] = '${json['id']}';
+    mapped['bio'] ??= json['description'] ?? json['bio'];
+    mapped['displayName'] ??= json['displayName'] ?? json['name'];
+    final href = json['href'] as String?;
+    if (href != null && href.startsWith('/blobbers/')) {
+      mapped['slug'] ??= href.split('/').last;
+    }
+    mapped['username'] ??= mapped['slug'] ?? json['username'];
+    return _$BlobberModelFromJson(mapped);
+  }
 
   Map<String, dynamic> toJson() => _$BlobberModelToJson(this);
 }

@@ -119,7 +119,7 @@ abstract final class PrintsRepo {
     final base = sheet
         ? '/api/sheets/$id/media/$kind'
         : '/api/packs/$id/media/$kind';
-    return ApiParse.absoluteUrl(base);
+    return ApiParse.absoluteUrl(base)!;
   }
 
   static ApiError _err(DioException e) => ApiError(

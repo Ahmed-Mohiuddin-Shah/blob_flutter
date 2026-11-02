@@ -28,13 +28,41 @@ class StickerModel {
 
   String get displayTitle => title?.isNotEmpty == true ? title! : (slug ?? id);
 
-  String? get previewUrl => thumbnailUrl ?? chatUrl ?? imageUrl;
+  String? get previewUrl {
+    for (final u in [thumbnailUrl, chatUrl, imageUrl]) {
+      if (u != null && u.isNotEmpty) return u;
+    }
+    return null;
+  }
 
   factory StickerModel.fromJson(Map<String, dynamic> json) {
-    // Defensive: API may nest media URLs.
     final mapped = Map<String, dynamic>.from(json);
+    mapped['id'] = '${json['id']}';
+    // List cards use thumbUrl; detail uses media[].
+    mapped['thumbnailUrl'] ??=
+        json['thumbUrl'] ?? json['thumbnailUrl'] ?? json['thumbnail'];
+    mapped['chatUrl'] ??= json['chatUrl'] ?? json['chat'];
+    mapped['imageUrl'] ??= json['imageUrl'] ?? json['image'];
+
     final media = json['media'];
-    if (media is Map) {
+    if (media is List) {
+      for (final item in media) {
+        if (item is! Map) continue;
+        final m = Map<String, dynamic>.from(item);
+        final kind = '${m['kind'] ?? ''}';
+        final url = m['url'] as String?;
+        if (url == null || url.isEmpty) continue;
+        switch (kind) {
+          case 'chat':
+            mapped['chatUrl'] ??= url;
+          case 'thumbnail':
+          case 'gif':
+            mapped['thumbnailUrl'] ??= url;
+          case 'image':
+            mapped['imageUrl'] ??= url;
+        }
+      }
+    } else if (media is Map) {
       mapped['chatUrl'] ??= media['chat']?['url'] ?? media['chatUrl'];
       mapped['thumbnailUrl'] ??=
           media['thumbnail']?['url'] ?? media['thumbnailUrl'];

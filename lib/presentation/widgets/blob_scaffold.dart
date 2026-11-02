@@ -27,15 +27,18 @@ class BlobScaffold extends StatelessWidget {
     final bottom = MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
+      // Transparent so scroll content can show through the glass tint.
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBody: true,
+      extendBodyBehindAppBar: true,
       floatingActionButton: floatingActionButton,
       body: Stack(
         fit: StackFit.expand,
         children: [
           CustomScrollView(
             slivers: [
-              // Space so first content clears the glass bar.
-              SliverToBoxAdapter(child: SizedBox(height: barH)),
+              // Top inset only — scrolling pulls content under the glass bar.
+              SpiverTopInset(barH),
               ...slivers,
               SliverToBoxAdapter(child: SizedBox(height: bottom + 24)),
             ],
@@ -54,5 +57,16 @@ class BlobScaffold extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class SpiverTopInset extends StatelessWidget {
+  const SpiverTopInset(this.height, {super.key});
+
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(child: SizedBox(height: height));
   }
 }

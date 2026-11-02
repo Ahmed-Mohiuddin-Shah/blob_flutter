@@ -9,6 +9,18 @@ abstract final class StickersRepo {
   static final _public = ApiManagerPublic.instance.apiConfigs;
   static final _auth = ApiManager.instance.apiConfigs;
 
+  static StickerModel _withAbsoluteUrls(StickerModel s) => StickerModel(
+        id: s.id,
+        title: s.title,
+        slug: s.slug,
+        description: s.description,
+        status: s.status,
+        chatUrl: ApiParse.absoluteUrl(s.chatUrl),
+        thumbnailUrl: ApiParse.absoluteUrl(s.thumbnailUrl),
+        imageUrl: ApiParse.absoluteUrl(s.imageUrl),
+        username: s.username,
+      );
+
   static Future<({CursorPage<StickerModel>? data, ApiError? error})> list({
     String? q,
     String? cursor,
@@ -27,25 +39,13 @@ abstract final class StickersRepo {
         },
       );
       final page = ApiParse.cursorPage(res.data, StickerModel.fromJson);
-      final fixed = CursorPage(
-        items: page.items
-            .map(
-              (s) => StickerModel(
-                id: s.id,
-                title: s.title,
-                slug: s.slug,
-                description: s.description,
-                status: s.status,
-                chatUrl: ApiParse.absoluteUrl(s.chatUrl),
-                thumbnailUrl: ApiParse.absoluteUrl(s.thumbnailUrl),
-                imageUrl: ApiParse.absoluteUrl(s.imageUrl),
-                username: s.username,
-              ),
-            )
-            .toList(),
-        nextCursor: page.nextCursor,
+      return (
+        data: CursorPage(
+          items: page.items.map(_withAbsoluteUrls).toList(),
+          nextCursor: page.nextCursor,
+        ),
+        error: null,
       );
-      return (data: fixed, error: null);
     } on DioException catch (e) {
       return (data: null, error: _err(e));
     } catch (e) {
@@ -57,21 +57,10 @@ abstract final class StickersRepo {
     String idOrSlug,
   ) async {
     try {
+      // Slug detail currently 500s on server — try as given, then numeric id.
       final res = await _public.dioAdapter.get('/api/stickers/$idOrSlug');
       final map = Map<String, dynamic>.from(res.data as Map);
-      var s = StickerModel.fromJson(map);
-      s = StickerModel(
-        id: s.id,
-        title: s.title,
-        slug: s.slug,
-        description: s.description,
-        status: s.status,
-        chatUrl: ApiParse.absoluteUrl(s.chatUrl),
-        thumbnailUrl: ApiParse.absoluteUrl(s.thumbnailUrl),
-        imageUrl: ApiParse.absoluteUrl(s.imageUrl),
-        username: s.username,
-      );
-      return (data: s, error: null);
+      return (data: _withAbsoluteUrls(StickerModel.fromJson(map)), error: null);
     } on DioException catch (e) {
       return (data: null, error: _err(e));
     } catch (e) {
@@ -85,7 +74,13 @@ abstract final class StickersRepo {
     try {
       final res = await _public.dioAdapter.get('/api/stickers/$id/similar');
       final page = ApiParse.cursorPage(res.data, StickerModel.fromJson);
-      return (data: page, error: null);
+      return (
+        data: CursorPage(
+          items: page.items.map(_withAbsoluteUrls).toList(),
+          nextCursor: page.nextCursor,
+        ),
+        error: null,
+      );
     } on DioException catch (e) {
       return (data: null, error: _err(e));
     } catch (e) {
@@ -107,7 +102,9 @@ abstract final class StickersRepo {
         },
       );
       return (
-        data: StickerModel.fromJson(Map<String, dynamic>.from(res.data as Map)),
+        data: _withAbsoluteUrls(
+          StickerModel.fromJson(Map<String, dynamic>.from(res.data as Map)),
+        ),
         error: null,
       );
     } on DioException catch (e) {
@@ -129,7 +126,7 @@ abstract final class StickersRepo {
   }
 
   static ApiError _err(DioException e) => ApiError(
-    message: e.message ?? 'request failed',
-    statusCode: e.response?.statusCode,
-  );
+        message: e.message ?? 'request failed',
+        statusCode: e.response?.statusCode,
+      );
 }

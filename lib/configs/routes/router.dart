@@ -2,7 +2,6 @@ import 'package:blob_flutter/configs/routes/navigator_key.dart';
 import 'package:blob_flutter/configs/routes/pending_deep_link.dart';
 import 'package:blob_flutter/configs/routes/route_names.dart';
 import 'package:blob_flutter/configs/utils/deeplinks/deep_link_mapper.dart';
-import 'package:blob_flutter/logic/home/home_navigation_cubit.dart';
 import 'package:blob_flutter/presentation/blobbers/blobbers_view.dart';
 import 'package:blob_flutter/presentation/collections/collections_view.dart';
 import 'package:blob_flutter/presentation/editor/editor_host_view.dart';
@@ -20,11 +19,10 @@ import 'package:blob_flutter/presentation/stickers/stickers_view.dart';
 import 'package:blob_flutter/presentation/stickers/upload_gate_view.dart';
 import 'package:blob_flutter/presentation/whatsapp/whatsapp_export_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-NoTransitionPage<void> _tabPage(Widget child) =>
-    NoTransitionPage<void>(child: child);
+NoTransitionPage<void> _tabPage(GoRouterState state, Widget child) =>
+    NoTransitionPage<void>(key: state.pageKey, child: child);
 
 bool _isOAuthCallback(GoRouterState state) {
   final raw = state.uri.toString();
@@ -67,7 +65,12 @@ final GoRouter router = GoRouter(
   },
   // go_router allows only one of onException / errorBuilder / errorPageBuilder.
   onException: (context, state, router) {
-    router.go(PendingDeepLink.homeReady ? RouteNames.home : RouteNames.splash);
+    // Defer so we don't navigate while the navigator is locked.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      router.go(
+        PendingDeepLink.homeReady ? RouteNames.home : RouteNames.splash,
+      );
+    });
   },
   routes: [
     GoRoute(
@@ -91,40 +94,30 @@ final GoRouter router = GoRouter(
       routes: [
         GoRoute(
           path: RouteNames.stickers,
-          pageBuilder: (context, state) {
-            context.read<HomeNavigationCubit>().select(HomeTab.stickers);
-            return _tabPage(const StickersView());
-          },
+          pageBuilder: (context, state) =>
+              _tabPage(state, const StickersView()),
         ),
         GoRoute(
           path: RouteNames.blobbers,
-          pageBuilder: (context, state) {
-            context.read<HomeNavigationCubit>().select(HomeTab.blobbers);
-            return _tabPage(const BlobbersView());
-          },
+          pageBuilder: (context, state) =>
+              _tabPage(state, const BlobbersView()),
         ),
         GoRoute(
           path: RouteNames.prints,
-          pageBuilder: (context, state) {
-            context.read<HomeNavigationCubit>().select(HomeTab.prints);
-            return _tabPage(const PrintsView());
-          },
+          pageBuilder: (context, state) =>
+              _tabPage(state, const PrintsView()),
         ),
         GoRoute(
           path: RouteNames.collections,
-          pageBuilder: (context, state) {
-            context.read<HomeNavigationCubit>().select(HomeTab.collections);
-            return _tabPage(const CollectionsView());
-          },
+          pageBuilder: (context, state) =>
+              _tabPage(state, const CollectionsView()),
         ),
         GoRoute(
           path: RouteNames.search,
-          pageBuilder: (context, state) {
-            context.read<HomeNavigationCubit>().select(HomeTab.search);
-            return _tabPage(
-              SearchView(initialQuery: state.uri.queryParameters['q']),
-            );
-          },
+          pageBuilder: (context, state) => _tabPage(
+            state,
+            SearchView(initialQuery: state.uri.queryParameters['q']),
+          ),
         ),
       ],
     ),
