@@ -4,14 +4,13 @@
         android:label="@string/app_name"
         android:name=".BlobApplication"
         android:icon="@mipmap/ic_launcher">
-        <!-- Self-hosted measure.sh (API URL + key from flavor .env via Gradle) -->
         <meta-data
             android:name="sh.measure.android.API_KEY"
             android:value="${measureApiKey}" />
         <meta-data
             android:name="sh.measure.android.API_URL"
             android:value="${measureApiUrl}" />
-        <!-- Flutter / go_router https App Links -->
+        <!-- https App Links only; custom-scheme OAuth must NOT go through Flutter. -->
         <meta-data
             android:name="flutter_deeplinking_enabled"
             android:value="true" />
@@ -32,7 +31,6 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-            <!-- https App Links (host from flavor .env) -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -42,14 +40,16 @@
         </activity>
 
         <!--
-          AppAuth MUST own the OAuth custom-scheme redirect.
-          Do NOT put appAuthRedirectScheme on MainActivity — that steals the callback.
+          Own the OAuth custom scheme so Chrome Custom Tabs returns here,
+          not to MainActivity / go_router.
+          appAuthRedirectScheme is also set in build.gradle (flutter_appauth).
         -->
         <activity
             android:name="net.openid.appauth.RedirectUriReceiverActivity"
             android:exported="true"
             android:excludeFromRecents="true"
-            android:theme="@style/Theme.AppCompat.Translucent.NoTitleBar"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
             tools:node="replace">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -67,6 +67,10 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Custom tabs for AppAuth -->
+        <intent>
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
         </intent>
     </queries>
 </manifest>

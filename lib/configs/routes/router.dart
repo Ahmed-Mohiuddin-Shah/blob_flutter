@@ -24,20 +24,35 @@ GoRouterPageBuilder _detail(String title, {String? param}) {
   };
 }
 
+/// Zitadel / AppAuth callback — must never be handled as an app route.
+bool _isOAuthCallback(GoRouterState state) {
+  final raw = state.uri.toString();
+  final path = state.uri.path;
+  final scheme = state.uri.scheme;
+  return path == '/oauthredirect' ||
+      raw.contains('oauthredirect') ||
+      scheme.startsWith('com.mamajees.blob.app');
+}
+
 final GoRouter router = GoRouter(
   navigatorKey: navigatorKey,
   initialLocation: RouteNames.splash,
   redirect: (context, state) {
-    final uri = state.uri;
-
-    // Custom-scheme OAuth returns must not be routed by go_router.
-    if (uri.scheme.startsWith('com.mamajees.blob.app')) {
-      return RouteNames.splash;
+    // AppAuth owns this URL. Bounce to a real route so go_router doesn't 404;
+    // the plugin still completes via RedirectUriReceiverActivity when it can.
+    if (_isOAuthCallback(state)) {
+      return PendingDeepLink.homeReady ? RouteNames.home : RouteNames.splash;
     }
 
+    final uri = state.uri;
     final mapped = DeepLinkMapper.toAppLocation(uri);
 
-    // Cold-start / warm App Link before splash finishes → stash, show splash.
+    // `/` and empty → home (or splash until boot).
+    if (uri.path.isEmpty || uri.path == '/') {
+      return PendingDeepLink.homeReady ? RouteNames.home : RouteNames.splash;
+    }
+
+    // Cold-start App Link before splash finishes → stash, show splash.
     if (!PendingDeepLink.homeReady &&
         state.matchedLocation != RouteNames.splash &&
         mapped != RouteNames.splash) {
@@ -45,33 +60,50 @@ final GoRouter router = GoRouter(
       return RouteNames.splash;
     }
 
-    // Remap web-only / aliases (e.g. `/` → `/stickers`, `/admin` → home).
-    final current =
-        uri.hasQuery ? '${uri.path}?${uri.query}' : (uri.path.isEmpty ? '/' : uri.path);
+    // Remap web-only / aliases.
+    final current = uri.hasQuery
+        ? '${uri.path}?${uri.query}'
+        : uri.path;
     if (mapped != current &&
         mapped != state.matchedLocation &&
         state.matchedLocation != RouteNames.splash) {
       return mapped;
     }
-    if (uri.path == '/' || uri.path.isEmpty) {
-      if (PendingDeepLink.homeReady) return RouteNames.home;
-    }
     return null;
   },
-  errorBuilder: (context, state) => const PlaceholderDetailView(
-    title: 'Home',
-    subtitle: 'Unknown link — sent home',
-  ),
+  errorBuilder: (context, state) {
+    // Never leave the user on Page Not Found — especially OAuth misfires.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) {
+        GoRouter.of(context).go(
+          PendingDeepLink.homeReady ? RouteNames.home : RouteNames.splash,
+        );
+      }
+    });
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
+    );
+  },
   onException: (context, state, router) {
-    router.go(RouteNames.home);
+    router.go(PendingDeepLink.homeReady ? RouteNames.home : RouteNames.splash);
   },
   routes: [
+    GoRoute(
+      path: '/',
+      redirect: (context, state) =>
+          PendingDeepLink.homeReady ? RouteNames.home : RouteNames.splash,
+    ),
+    // Swallow if Flutter deep linking strips the custom scheme.
+    GoRoute(
+      path: '/oauthredirect',
+      redirect: (context, state) =>
+          PendingDeepLink.homeReady ? RouteNames.home : RouteNames.splash,
+    ),
     GoRoute(
       path: RouteNames.splash,
       builder: (context, state) => const SplashView(),
     ),
 
-    // —— Main tabs (adaptive shell) ——
     ShellRoute(
       navigatorKey: shellNavigatorKey,
       builder: (context, state, child) => AdaptiveNavShell(child: child),
@@ -119,7 +151,6 @@ final GoRouter router = GoRouter(
       ],
     ),
 
-    // —— Stickers detail / editor ——
     GoRoute(
       path: '/stickers/:slug/edit',
       pageBuilder: _detail('Edit sticker', param: 'slug'),
@@ -137,7 +168,6 @@ final GoRouter router = GoRouter(
       pageBuilder: _detail('Sticker', param: 'slug'),
     ),
 
-    // —— Collections ——
     GoRoute(
       path: RouteNames.collectionsNew,
       pageBuilder: _detail('New collection'),
@@ -147,7 +177,6 @@ final GoRouter router = GoRouter(
       pageBuilder: _detail('Collection', param: 'slug'),
     ),
 
-    // —— Prints ——
     GoRoute(
       path: RouteNames.printsSheetsNew,
       pageBuilder: _detail('New sheet'),
@@ -165,7 +194,6 @@ final GoRouter router = GoRouter(
       pageBuilder: _detail('Pack', param: 'slug'),
     ),
 
-    // —— Blobbers ——
     GoRoute(
       path: '/blobbers/id/:id',
       pageBuilder: _detail('Blobber', param: 'id'),
@@ -175,7 +203,6 @@ final GoRouter router = GoRouter(
       pageBuilder: _detail('Blobber', param: 'slug'),
     ),
 
-    // —— Legal / upload / profile ——
     GoRoute(path: RouteNames.about, pageBuilder: _detail('About')),
     GoRoute(path: RouteNames.terms, pageBuilder: _detail('Terms')),
     GoRoute(path: RouteNames.privacy, pageBuilder: _detail('Privacy')),
@@ -197,7 +224,6 @@ final GoRouter router = GoRouter(
       pageBuilder: _detail('Associate blobber'),
     ),
 
-    // Legacy alias
     GoRoute(
       path: '/settings',
       redirect: (context, state) => RouteNames.settings,

@@ -30,6 +30,9 @@ abstract final class DeepLinkMapper {
   }
 
   static String _mapPath(String path) {
+    // AppAuth callback path if Flutter ever sees it without the custom scheme.
+    if (path == '/oauthredirect') return RouteNames.home;
+
     // Web auth / logout — native PKCE only.
     if (path == '/auth/login') {
       return _signedIn ? RouteNames.home : RouteNames.settings;
