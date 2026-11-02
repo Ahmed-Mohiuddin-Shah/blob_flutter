@@ -15,12 +15,19 @@ abstract final class ZitadelAuth {
       appLog.warning('Zitadel env incomplete — cannot sign in');
       return false;
     }
+    // Issuer must be origin only; discovery is derived.
+    final issuerUri = Uri.parse(issuer);
+    final cleanIssuer =
+        '${issuerUri.scheme}://${issuerUri.host}${issuerUri.hasPort ? ':${issuerUri.port}' : ''}';
+    final discoveryUrl = '$cleanIssuer/.well-known/openid-configuration';
+
     try {
+      appLog.info('Zitadel sign-in redirect=$redirect discovery=$discoveryUrl');
       final result = await _appAuth.authorizeAndExchangeCode(
         AuthorizationTokenRequest(
           clientId,
           redirect,
-          issuer: issuer,
+          discoveryUrl: discoveryUrl,
           scopes: const ['openid', 'profile', 'email', 'offline_access'],
           additionalParameters: {
             if (audience.isNotEmpty) 'audience': audience,
@@ -34,6 +41,9 @@ abstract final class ZitadelAuth {
         refreshToken: result.refreshToken,
       );
       return true;
+    } on FlutterAppAuthUserCancelledException {
+      appLog.info('Zitadel sign-in cancelled');
+      return false;
     } catch (e, st) {
       appLog.severe('Zitadel sign-in failed: $e', e, st);
       return false;

@@ -82,9 +82,14 @@ Tabs: Stickers / Blobbers / Prints / Collections / Search.
 
 1. Cold start → version gate → splash → home (guest OK) or resume session.
 2. `flutter_appauth` PKCE against Zitadel; audience = `ZITADEL_API_CLIENT_ID`.
-3. Access/refresh in secure storage; Dio attaches `Authorization: Bearer`.
-4. Single-flight refresh on 401; clear session on hard failure.
-5. `GET /api/me` → `MeCubit` for role, `account_status`, blobatar (never Zitadel picture).
+3. Redirect URI must match Zitadel exactly, e.g. `com.mamajees.blob.app:/oauthredirect`. Android: `RedirectUriReceiverActivity` owns the custom scheme (not `MainActivity`).
+4. Access/refresh in secure storage; Dio attaches `Authorization: Bearer`.
+5. Single-flight refresh on 401; clear session on hard failure.
+6. `GET /api/me` → `MeCubit` for role, `account_status`, blobatar (never Zitadel picture).
+
+## Deep links
+
+HTTPS host from `*_DEEPLINK_HOST` / `*_BASE_URL` (Android App Links + Flutter deep linking). `DeepLinkMapper` maps web paths → app routes; admin/auth-cookie paths → home; unknown → home (`/stickers`). Pending links wait until splash finishes.
 
 ## Persistence split
 

@@ -1,9 +1,8 @@
 import 'package:blob_flutter/configs/app/global/app_colors.dart';
-import 'package:blob_flutter/configs/routes/route_names.dart';
+import 'package:blob_flutter/configs/routes/pending_deep_link.dart';
 import 'package:blob_flutter/logic/splash/splash_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class SplashView extends StatelessWidget {
   const SplashView({super.key});
@@ -14,7 +13,9 @@ class SplashView extends StatelessWidget {
       create: (_) => SplashCubit()..boot(),
       child: BlocListener<SplashCubit, SplashState>(
         listenWhen: (p, c) => c.phase == SplashPhase.ready,
-        listener: (context, state) => context.go(RouteNames.stickers),
+        listener: (context, state) {
+          PendingDeepLink.consumeAfterSplash(context);
+        },
         child: Scaffold(
           body: Container(
             width: double.infinity,
