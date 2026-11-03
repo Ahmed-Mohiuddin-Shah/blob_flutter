@@ -33,9 +33,9 @@ abstract final class StickersRepo {
         '/api/stickers',
         queryParameters: {
           if (q != null && q.isNotEmpty) 'q': q,
-          if (cursor != null) 'cursor': cursor,
+          'cursor': ?cursor,
           if (mine) 'mine': '1',
-          if (status != null) 'status': status,
+          'status': ?status,
         },
       );
       final page = ApiParse.cursorPage(res.data, StickerModel.fromJson);
@@ -136,13 +136,13 @@ abstract final class StickersRepo {
       final res = await _auth.dioAdapter.patch(
         '/api/stickers/$id',
         data: {
-          if (title != null) 'title': title,
-          if (description != null) 'description': description,
+          'title': ?title,
+          'description': ?description,
         },
       );
       final body = res.data;
       if (body is Map && body['ok'] == true) {
-        return _getById(id);
+        return await _getById(id);
       }
       return (
         data: _withAbsoluteUrls(

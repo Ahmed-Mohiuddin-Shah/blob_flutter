@@ -81,6 +81,8 @@ class SettingsView extends StatelessWidget {
 }
 
 class SpiverThemeTile extends StatelessWidget {
+  const SpiverThemeTile({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
@@ -113,6 +115,8 @@ class SpiverThemeTile extends StatelessWidget {
 }
 
 class SpiverAuthTile extends StatelessWidget {
+  const SpiverAuthTile({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(

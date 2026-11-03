@@ -20,7 +20,7 @@ abstract final class SearchRepo {
           'q': q,
           'mode': 'keywords',
           'scope': 'stickers',
-          if (cursor != null) 'cursor': cursor,
+          'cursor': ?cursor,
         },
       );
       final page = ApiParse.cursorPage(res.data, StickerModel.fromJson);

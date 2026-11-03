@@ -15,7 +15,7 @@ abstract final class CollectionsRepo {
     try {
       final res = await _public.dioAdapter.get(
         '/api/collections',
-        queryParameters: {if (cursor != null) 'cursor': cursor},
+        queryParameters: {'cursor': ?cursor},
       );
       return (
         data: ApiParse.cursorPage(res.data, CollectionModel.fromJson),

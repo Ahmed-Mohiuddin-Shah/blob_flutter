@@ -22,7 +22,7 @@ class Blobatar extends StatelessWidget {
         child: CachedNetworkImage(
           imageUrl: _url,
           fit: BoxFit.cover,
-          errorWidget: (_, __, ___) => CircleAvatar(
+          errorWidget: (_, _, _) => CircleAvatar(
             radius: size / 2,
             child: Text(username.isEmpty ? '?' : username[0].toUpperCase()),
           ),

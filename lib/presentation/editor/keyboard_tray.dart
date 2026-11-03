@@ -49,7 +49,7 @@ class _KeyboardTrayState extends State<KeyboardTray> {
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       itemCount: _items.length,
-      separatorBuilder: (_, __) => const SizedBox(width: 8),
+      separatorBuilder: (_, _) => const SizedBox(width: 8),
       itemBuilder: (context, i) {
         final s = _items[i];
         final url = s.chatUrl ?? s.previewUrl;

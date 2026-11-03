@@ -15,7 +15,7 @@ abstract final class PrintsRepo {
     try {
       final res = await _public.dioAdapter.get(
         '/api/sheets',
-        queryParameters: {if (cursor != null) 'cursor': cursor},
+        queryParameters: {'cursor': ?cursor},
       );
       return (
         data: ApiParse.cursorPage(res.data, SheetModel.fromJson),
@@ -34,7 +34,7 @@ abstract final class PrintsRepo {
     try {
       final res = await _public.dioAdapter.get(
         '/api/packs',
-        queryParameters: {if (cursor != null) 'cursor': cursor},
+        queryParameters: {'cursor': ?cursor},
       );
       return (
         data: ApiParse.cursorPage(res.data, PackModel.fromJson),

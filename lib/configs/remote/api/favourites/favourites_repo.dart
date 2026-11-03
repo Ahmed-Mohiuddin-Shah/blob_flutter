@@ -12,7 +12,7 @@ abstract final class FavouritesRepo {
     try {
       final res = await _api.dioAdapter.get(
         '/api/favourites',
-        queryParameters: {if (cursor != null) 'cursor': cursor},
+        queryParameters: {'cursor': ?cursor},
       );
       return (data: ApiParse.cursorPage(res.data, (m) => m), error: null);
     } on DioException catch (e) {

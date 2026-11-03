@@ -16,7 +16,7 @@ abstract final class KeyboardRepo {
       final res = await _api.dioAdapter.get(
         '/api/keyboard/stickers',
         queryParameters: {
-          if (cursor != null) 'cursor': cursor,
+          'cursor': ?cursor,
           if (q != null && q.isNotEmpty) 'q': q,
         },
       );

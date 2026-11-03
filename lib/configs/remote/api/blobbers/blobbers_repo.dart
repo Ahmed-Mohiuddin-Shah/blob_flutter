@@ -15,7 +15,7 @@ abstract final class BlobbersRepo {
     try {
       final res = await _public.dioAdapter.get(
         '/api/blobbers',
-        queryParameters: {if (cursor != null) 'cursor': cursor},
+        queryParameters: {'cursor': ?cursor},
       );
       return (
         data: ApiParse.cursorPage(res.data, BlobberModel.fromJson),
@@ -95,8 +95,8 @@ abstract final class BlobbersRepo {
       final res = await _auth.dioAdapter.patch(
         '/api/blobbers/me',
         data: {
-          if (bio != null) 'description': bio,
-          if (displayName != null) 'displayName': displayName,
+          'description': ?bio,
+          'displayName': ?displayName,
         },
       );
       return (
