@@ -126,7 +126,7 @@ class StickerDetailView extends StatelessWidget {
                           title: item.displayTitle,
                           imageUrl: item.previewUrl,
                           onTap: () => context.push(
-                            RouteNames.sticker(item.slug ?? item.id),
+                            RouteNames.sticker(item.id),
                           ),
                         );
                       }, childCount: state.similar.length),

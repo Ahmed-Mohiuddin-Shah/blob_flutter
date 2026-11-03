@@ -53,12 +53,44 @@ abstract final class StickersRepo {
     }
   }
 
+  /// Live API only accepts numeric ids (`BigInt`). Slug → resolve via list `q`.
   static Future<({StickerModel? data, ApiError? error})> getByIdOrSlug(
     String idOrSlug,
   ) async {
+    final key = idOrSlug.trim();
+    if (key.isEmpty) {
+      return (data: null, error: ApiError(message: 'Missing sticker id'));
+    }
+
+    if (ApiParse.isNumericId(key)) {
+      return _getById(key);
+    }
+
+    // Slug detail 500s server-side — find id from list search.
+    final listed = await list(q: key);
+    final items = listed.data?.items ?? const <StickerModel>[];
+    StickerModel? match;
+    for (final s in items) {
+      if (s.slug == key || s.id == key) {
+        match = s;
+        break;
+      }
+    }
+    match ??= items.isNotEmpty ? items.first : null;
+    if (match == null) {
+      return (
+        data: null,
+        error: listed.error ?? ApiError(message: 'Sticker not found'),
+      );
+    }
+    return _getById(match.id);
+  }
+
+  static Future<({StickerModel? data, ApiError? error})> _getById(
+    String id,
+  ) async {
     try {
-      // Slug detail currently 500s on server — try as given, then numeric id.
-      final res = await _public.dioAdapter.get('/api/stickers/$idOrSlug');
+      final res = await _public.dioAdapter.get('/api/stickers/$id');
       final map = Map<String, dynamic>.from(res.data as Map);
       return (data: _withAbsoluteUrls(StickerModel.fromJson(map)), error: null);
     } on DioException catch (e) {
@@ -82,6 +114,13 @@ abstract final class StickersRepo {
         error: null,
       );
     } on DioException catch (e) {
+      // Anonymous guests get 403 — soft-fail to empty.
+      if (e.response?.statusCode == 403) {
+        return (
+          data: const CursorPage<StickerModel>(items: []),
+          error: null,
+        );
+      }
       return (data: null, error: _err(e));
     } catch (e) {
       return (data: null, error: ApiError(message: e.toString()));
@@ -101,9 +140,13 @@ abstract final class StickersRepo {
           if (description != null) 'description': description,
         },
       );
+      final body = res.data;
+      if (body is Map && body['ok'] == true) {
+        return _getById(id);
+      }
       return (
         data: _withAbsoluteUrls(
-          StickerModel.fromJson(Map<String, dynamic>.from(res.data as Map)),
+          StickerModel.fromJson(Map<String, dynamic>.from(body as Map)),
         ),
         error: null,
       );
@@ -125,8 +168,13 @@ abstract final class StickersRepo {
     }
   }
 
-  static ApiError _err(DioException e) => ApiError(
-        message: e.message ?? 'request failed',
-        statusCode: e.response?.statusCode,
-      );
+  static ApiError _err(DioException e) {
+    final data = e.response?.data;
+    String? apiMsg;
+    if (data is Map && data['error'] != null) apiMsg = '${data['error']}';
+    return ApiError(
+      message: apiMsg ?? e.message ?? 'request failed',
+      statusCode: e.response?.statusCode,
+    );
+  }
 }

@@ -1,8 +1,10 @@
 # BLOB Flutter — API contract
 
-Base URL = site origin (`AUTH_URL`). JSON unless noted multipart. IDs are **decimal strings**. Auth: `Authorization: Bearer <zitadel_access_token>` (optional where marked public).
+Base URL = site origin (`BASE_URL` / site origin). JSON unless noted multipart. IDs are **decimal strings**. Auth: `Authorization: Bearer <zitadel_access_token>` (optional where marked public).
 
 Errors: `{ "error": string }` with HTTP 4xx/5xx. Cursor lists: `{ "items": [...], "nextCursor": string | null }`.
+
+**Live note (prod `blob.mamajees.com`):** sticker / blobber / sheet / pack **detail routes take numeric ids only** (`BigInt(id)`). Passing a slug → 500/400. Collections use **slug**. Flutter resolves slug deep links via list/`q` then fetches by id.
 
 Composition / print host notes: [`docs/diff.md`](../diff.md), [`docs/print-layout-host.md`](../print-layout-host.md).
 
@@ -40,13 +42,9 @@ Response:
 }
 ```
 
-`storeUrl` is platform-specific (`android_store_url` / `ios_store_url`) when set. Prefer `storeUrl` for the update CTA. `heading` / `message` / `iconUrl` / `backgroundUrl` drive the gate UI when present. `githubUrl` is optional source — clients need not surface it; self-builds are unsupported.
-
 ### `GET /api/app-version/download` (public)
 
-Query: `platform=android|ios`. Redirects/streams the current **public** cohort APK or IPA. `404` when missing. Web home / sideload use this; in-app updates should prefer `storeUrl`.
-
-Admin group CMS is web-only (`/profile/app-version`).
+Query: `platform=android|ios`. Redirects/streams the current **public** cohort APK or IPA.
 
 ---
 
@@ -66,9 +64,11 @@ Admin group CMS is web-only (`/profile/app-version`).
 }
 ```
 
+Flutter stores `appGroup` as the **key** string.
+
 ### `PATCH /api/me` (auth)
 
-Body: `{ "username": "ada" }` — local handle only (blobatar). Display name/email via Zitadel sync, not this route.
+Body: `{ "username": "ada" }` — local handle only (blobatar).
 
 ---
 
@@ -76,50 +76,68 @@ Body: `{ "username": "ada" }` — local handle only (blobatar). Display name/ema
 
 ### `GET /api/stickers` (public; `mine=1` requires auth)
 
+List card shape (live):
+
+```json
+{
+  "id": "37",
+  "title": "Rest is Productive",
+  "slug": "rest-is-productive",
+  "thumbUrl": "/api/stickers/37/media/thumbnail",
+  "username": "mohiuddin",
+  "category": "Miscellaneous",
+  "type": "IMAGE",
+  "href": "/stickers/rest-is-productive",
+  "favourited": false
+}
+```
+
 | Param | Notes |
 |-------|--------|
 | `q` | Search |
 | `category` | Category slug |
 | `cursor` | Opaque |
-| `mine` | `1` = own stickers (any visibility) |
-| `status` | With `mine=1`: moderation status filter (`pending_review`, `needs_edit`, `approved`, …) |
+| `mine` | `1` = own stickers |
+| `status` | With `mine=1`: moderation status filter |
 
 ### `GET /api/stickers/{id}` (public w/ access rules)
 
-Detail payload: metadata, tags, category, attribution, moderation/processing status, media kinds with status + proxy path `/api/stickers/{id}/media/{kind}`.
+**`id` must be numeric.** Detail includes `media` as an **array**:
 
-### `POST /api/stickers` (member) — multipart
+```json
+{
+  "id": "37",
+  "title": "…",
+  "slug": "rest-is-productive",
+  "moderationStatus": "approved",
+  "processingStatus": "ready",
+  "media": [
+    { "kind": "image", "status": "ready", "url": "/api/stickers/37/media/image" },
+    { "kind": "thumbnail", "status": "ready", "url": "/api/stickers/37/media/thumbnail" },
+    { "kind": "chat", "status": "ready", "url": "/api/stickers/37/media/chat" }
+  ]
+}
+```
 
-Fields: `title`, `description?`, `visibility`, `categoryId?`, `tags?`, attribution fields, `document` (JSON string), optional `chat`/`thumbnail`/`full`/`mask` blobs, asset refs as required by create flow.
+### `GET /api/stickers/{id}/media/{kind}`
 
-### `PATCH /api/stickers/{id}` (owner/editor) — JSON metadata only
+Often **302** redirects to GLASS (`glass-*.mamajees.com`). Clients must follow redirects.
 
-### `POST /api/stickers/{id}/composition` (owner) — save revision + enqueue encode
+Kinds: `image` \| `chat` \| `thumbnail` \| `mask` \| `gif` \| `video` \| `og` \| …
 
-### `POST /api/stickers/{id}/remix` (member)
+### `GET /api/stickers/{id}/similar`
 
-### `GET /api/stickers/{id}/media/{kind}` (access-gated)
+May return **403** for anonymous guests — Flutter soft-fails to an empty list.
 
-Kinds: `image` \| `chat` \| `thumbnail` \| `mask` \| `gif` \| `video` \| `og` \| `storyboard` \| …  
-Flutter downloads: prefer `chat` for trays; `image`/`gif`/`video` for WhatsApp local export. `og` is website link-preview — ignore for packs.
+### Other sticker writes
 
-### `GET /api/stickers/{id}/similar` (public)
-
-### `POST /api/stickers/{id}/attribution-claims` (auth) — create only
-
-### Admin-only sticker actions (web)
-
-`approve` / `reject` / `request-edit` / `reprocess` / search-meta — **not used by Flutter member app**.
+`POST /api/stickers`, `PATCH /api/stickers/{id}`, `POST …/composition`, `POST …/remix`, `POST …/attribution-claims` — member/auth as before.
 
 ---
 
 ## Chat keyboard
 
 ### `GET /api/keyboard/stickers` (public; richer when auth)
-
-Compact tray feed. Query: `cursor`, `q?`.
-
-Item shape:
 
 ```json
 {
@@ -132,37 +150,47 @@ Item shape:
 }
 ```
 
-Signed-in: favourites-first then public ready stickers. Anonymous: public ready only. Only stickers with ready `chat` derivative.
-
 ---
 
 ## Categories / tags / search
 
-### `GET /api/categories` (public)
+### `GET /api/categories` / `GET /api/tags`
 
-`{ "items": [{ "id", "name", "slug", "sortOrder", "parentId" }] }`
-
-### `GET /api/tags` (public)
+`{ "items": [...] }`
 
 ### `GET /api/search` (public; modes gated by role)
+
+| Param | Notes |
+|-------|--------|
+| `q` | Query |
+| `mode` | Default server-side is **`hybrid`** (403 for guests). Flutter sends **`mode=keywords`**. |
+| `scope` | Optional: `stickers` \| `collections` \| `prints` \| `blobbers` |
+
+Live response (Meili), **not** cursor `items`:
+
+```json
+{
+  "engine": "…",
+  "hits": [
+    {
+      "id": "33",
+      "slug": "toptext-party-cat",
+      "title": "TopText Party Cat",
+      "previewUrl": "https://blob.mamajees.com/api/stickers/33/media/thumbnail",
+      "index": "stickers"
+    }
+  ],
+  "facetDistribution": {}
+}
+```
 
 ### `POST /api/search/agent` (member+) — optional; heavy
 
 ---
 
-## Assets
-
-### `POST /api/assets` (member) — upload original → GLASS private prism
-
-### `GET /api/assets/{id}` — as implemented for editor host
-
----
-
 ## Favourites
 
-### `GET /api/favourites` (auth)
-
-### `PUT /api/favourites` / `DELETE /api/favourites` (auth)
+### `GET /api/favourites` / `PUT` / `DELETE` (auth)
 
 Body: `{ "subjectType": "sticker"|"collection"|"sticker_sheet"|"sticker_pack", "subjectId": "…" }`
 
@@ -172,70 +200,84 @@ Body: `{ "subjectType": "sticker"|"collection"|"sticker_sheet"|"sticker_pack", "
 
 ### `GET/POST /api/collections`
 
-### `GET/PATCH /api/collections/{slug}`
+List item uses **`name`** (not `title`), plus `previewThumbUrls[]`, `itemCount` / `stickerCount`.
 
-### `POST /api/collections/{slug}/stickers`
+### `GET/PATCH /api/collections/{slug}` — slug OK
 
-### `DELETE /api/collections/{slug}/stickers/{stickerId}?subjectType=`
+### Item / pack helpers
 
-### `POST /api/collections/{slug}/pack` — when available
+`POST …/stickers`, `DELETE …/stickers/{stickerId}`, `POST …/pack` when available.
 
 ---
 
 ## Prints
 
-### Sheets: `GET/POST /api/sheets`, `GET/PATCH/DELETE /api/sheets/{id}`, `…/media/{format}`, `…/stickers`
+There is **no** `/api/prints`. Use sheets + packs:
 
-### Packs: `GET/POST /api/packs`, `GET …/packs/{id}`, media, stickers
+### Sheets: `GET/POST /api/sheets`, `GET/PATCH/DELETE /api/sheets/{id}` (**numeric id**)
 
-`format`: `png` \| `pdf`. Async `status`: `pending` \| `ready` \| `failed` — poll.
+List/detail use **`name`**, `previewUrl`, `status` (`pending` \| `ready` \| `failed`).
+
+### Packs: `GET/POST /api/packs`, `GET …/packs/{id}` (**numeric id**)
+
+Media: `…/media/{format}` with `format`: `png` \| `pdf`.
 
 ---
 
 ## Blobbers
 
-### `GET /api/blobbers`, `GET /api/blobbers/{id}`, nested stickers/sheets/collections
+### `GET /api/blobbers`
+
+```json
+{
+  "id": "11",
+  "displayName": "jukeboxsaints",
+  "description": null,
+  "href": "/blobbers/jukeboxsaints",
+  "linked": false,
+  "stickers": [{ "id": "54", "title": "…", "thumbUrl": "…", "href": "…" }]
+}
+```
+
+### `GET /api/blobbers/{id}` — **numeric id only**
+
+`/api/blobbers/id/{id}` is **not** an API route (HTML). Flutter app path `/blobbers/id/:id` is in-app only; API call is `/api/blobbers/{id}`.
 
 ### `GET/PATCH /api/blobbers/me`, `POST /api/blobbers/media` (auth)
 
-### Association / edit-request create APIs as on web; **admin approve/reject = web only**
+Association create: `POST /api/blobber-association-requests`.
 
 ---
 
 ## Legal (app copy)
 
-Public JSON for in-app screens (structured sections; not HTML). Website pages at `/about`, `/terms`, `/privacy` use the web variant of the same source.
+### `GET /api/legal/{about|terms|privacy}`
 
-### `GET /api/legal/about`
-
-### `GET /api/legal/terms`
-
-### `GET /api/legal/privacy`
-
-Shared shape (about adds `tagline`, `lead`, `features`, copyright/why fields):
+Shared shape. **About** `tagline` is a **string array** live (Flutter joins to one string):
 
 ```json
 {
-  "slug": "terms",
-  "title": "Terms of use",
-  "description": "…",
-  "updatedAt": "2026-11-01",
+  "slug": "about",
+  "title": "About",
+  "tagline": ["a library", "of stickers"],
+  "lead": "…",
   "sections": [{ "heading": "…", "paragraphs": ["…"] }]
 }
 ```
 
+---
+
 ## Health
 
-### `GET /api/health` — liveness / dependency probe (optional for app)
+### `GET /api/health`
 
 ---
 
 ## WhatsApp export (client-only — no pack API)
 
-1. Resolve selected sticker ids (user must be allowed to access media).
-2. `GET …/media/image` (static) or `gif`/`video` (animated Should).
+1. Resolve selected sticker ids.
+2. `GET …/media/image` (static) or `gif`/`video` (animated later).
 3. On device: encode Meta-compliant WebP pack + tray; install via WhatsApp.
-4. No BLOB endpoints for pack create/store.
 
 ---
 
@@ -245,7 +287,7 @@ Shared shape (about adds `tagline`, `lead`, `features`, copyright/why fields):
 |--------|------|------|
 | `GET/POST` | `/api/admin/app-version/groups` | superadmin |
 | `GET/PATCH/DELETE` | `/api/admin/app-version/groups/{id}` | superadmin |
-| `POST` | `/api/admin/app-version/groups/{id}/media` | superadmin — multipart `kind=icon\|background` + `file` |
-| `POST` | `/api/admin/app-version/binaries` | superadmin — multipart `platform` + `version` + `file` (public APK/IPA; sets `latest_version`) |
-| `GET/PUT` | `/api/admin/app-version/deep-links` | superadmin — site-wide App Links / Universal Links config |
-| `PATCH` | `/api/admin/app-version/members/{userId}` | superadmin — body `{ "groupId" }` exclusive move |
+| `POST` | `/api/admin/app-version/groups/{id}/media` | superadmin |
+| `POST` | `/api/admin/app-version/binaries` | superadmin |
+| `GET/PUT` | `/api/admin/app-version/deep-links` | superadmin |
+| `PATCH` | `/api/admin/app-version/members/{userId}` | superadmin |

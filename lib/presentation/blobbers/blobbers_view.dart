@@ -39,8 +39,7 @@ class BlobbersView extends StatelessWidget {
                       ),
                       title: Text(b.displayTitle),
                       subtitle: Text(b.bio ?? ''),
-                      onTap: () =>
-                          context.push(RouteNames.blobber(b.slug ?? b.id)),
+                      onTap: () => context.push(RouteNames.blobberId(b.id)),
                     );
                   },
                 ),

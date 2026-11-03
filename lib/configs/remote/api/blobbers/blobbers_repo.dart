@@ -28,11 +28,40 @@ abstract final class BlobbersRepo {
     }
   }
 
+  /// Live API accepts numeric ids only. Slug → resolve from directory list.
   static Future<({BlobberModel? data, ApiError? error})> get(
     String idOrSlug,
   ) async {
+    final key = idOrSlug.trim();
+    if (key.isEmpty) {
+      return (data: null, error: ApiError(message: 'Missing blobber id'));
+    }
+    if (ApiParse.isNumericId(key)) {
+      return _getById(key);
+    }
+    final listed = await list();
+    final items = listed.data?.items ?? const <BlobberModel>[];
+    BlobberModel? match;
+    for (final b in items) {
+      if (b.slug == key || b.username == key || b.displayName == key) {
+        match = b;
+        break;
+      }
+    }
+    if (match == null) {
+      return (
+        data: null,
+        error: listed.error ?? ApiError(message: 'Blobber not found'),
+      );
+    }
+    return _getById(match.id);
+  }
+
+  static Future<({BlobberModel? data, ApiError? error})> _getById(
+    String id,
+  ) async {
     try {
-      final res = await _public.dioAdapter.get('/api/blobbers/$idOrSlug');
+      final res = await _public.dioAdapter.get('/api/blobbers/$id');
       return (
         data: BlobberModel.fromJson(Map<String, dynamic>.from(res.data as Map)),
         error: null,
@@ -66,7 +95,7 @@ abstract final class BlobbersRepo {
       final res = await _auth.dioAdapter.patch(
         '/api/blobbers/me',
         data: {
-          if (bio != null) 'bio': bio,
+          if (bio != null) 'description': bio,
           if (displayName != null) 'displayName': displayName,
         },
       );
@@ -83,7 +112,8 @@ abstract final class BlobbersRepo {
 
   static Future<({ApiError? error})> requestAssociation() async {
     try {
-      await _auth.dioAdapter.post('/api/blobbers/associations');
+      // Live route: /api/blobber-association-requests
+      await _auth.dioAdapter.post('/api/blobber-association-requests');
       return (error: null);
     } on DioException catch (e) {
       return (error: _err(e));
@@ -92,8 +122,13 @@ abstract final class BlobbersRepo {
     }
   }
 
-  static ApiError _err(DioException e) => ApiError(
-    message: e.message ?? 'request failed',
-    statusCode: e.response?.statusCode,
-  );
+  static ApiError _err(DioException e) {
+    final data = e.response?.data;
+    String? apiMsg;
+    if (data is Map && data['error'] != null) apiMsg = '${data['error']}';
+    return ApiError(
+      message: apiMsg ?? e.message ?? 'request failed',
+      statusCode: e.response?.statusCode,
+    );
+  }
 }

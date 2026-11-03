@@ -94,7 +94,7 @@ class _EditBodyState extends State<_EditBody> {
                               );
                           if (saved != null && context.mounted) {
                             context.go(
-                              RouteNames.sticker(saved.slug ?? saved.id),
+                              RouteNames.sticker(saved.id),
                             );
                           }
                         },

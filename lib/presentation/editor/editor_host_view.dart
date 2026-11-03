@@ -59,7 +59,7 @@ class _EditorBody extends StatelessWidget {
                   BusyButton(
                     label: 'View sticker',
                     onPressed: () =>
-                        context.go(RouteNames.sticker(s.slug ?? s.id)),
+                        context.go(RouteNames.sticker(s.id)),
                   ),
                   const SizedBox(height: 8),
                   BusyButton(

@@ -35,8 +35,14 @@ class LegalDocument {
   final String? tagline;
   final String? lead;
 
-  factory LegalDocument.fromJson(Map<String, dynamic> json) =>
-      _$LegalDocumentFromJson(json);
+  factory LegalDocument.fromJson(Map<String, dynamic> json) {
+    final mapped = Map<String, dynamic>.from(json);
+    final tagline = json['tagline'];
+    if (tagline is List) {
+      mapped['tagline'] = tagline.map((e) => '$e').join(' ');
+    }
+    return _$LegalDocumentFromJson(mapped);
+  }
 
   Map<String, dynamic> toJson() => _$LegalDocumentToJson(this);
 }

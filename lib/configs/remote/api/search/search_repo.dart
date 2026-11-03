@@ -8,6 +8,7 @@ import 'package:dio/dio.dart';
 abstract final class SearchRepo {
   static final _api = ApiManagerPublic.instance.apiConfigs;
 
+  /// Guest-safe keywords mode. Live default is hybrid → 403 for anonymous.
   static Future<({CursorPage<StickerModel>? data, ApiError? error})> search({
     required String q,
     String? cursor,
@@ -15,18 +16,43 @@ abstract final class SearchRepo {
     try {
       final res = await _api.dioAdapter.get(
         '/api/search',
-        queryParameters: {'q': q, if (cursor != null) 'cursor': cursor},
+        queryParameters: {
+          'q': q,
+          'mode': 'keywords',
+          'scope': 'stickers',
+          if (cursor != null) 'cursor': cursor,
+        },
       );
-      // Search may return mixed types; prefer sticker-shaped items.
+      final page = ApiParse.cursorPage(res.data, StickerModel.fromJson);
       return (
-        data: ApiParse.cursorPage(res.data, StickerModel.fromJson),
+        data: CursorPage(
+          items: page.items
+              .map(
+                (s) => StickerModel(
+                  id: s.id,
+                  title: s.title,
+                  slug: s.slug,
+                  description: s.description,
+                  status: s.status,
+                  chatUrl: ApiParse.absoluteUrl(s.chatUrl),
+                  thumbnailUrl: ApiParse.absoluteUrl(s.thumbnailUrl),
+                  imageUrl: ApiParse.absoluteUrl(s.imageUrl),
+                  username: s.username,
+                ),
+              )
+              .toList(),
+          nextCursor: page.nextCursor,
+        ),
         error: null,
       );
     } on DioException catch (e) {
+      final data = e.response?.data;
+      String? apiMsg;
+      if (data is Map && data['error'] != null) apiMsg = '${data['error']}';
       return (
         data: null,
         error: ApiError(
-          message: e.message ?? 'search failed',
+          message: apiMsg ?? e.message ?? 'search failed',
           statusCode: e.response?.statusCode,
         ),
       );

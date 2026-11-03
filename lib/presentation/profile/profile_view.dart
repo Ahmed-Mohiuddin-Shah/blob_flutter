@@ -179,8 +179,7 @@ class LibraryView extends StatelessWidget {
                       return StickerCard(
                         title: s.displayTitle,
                         imageUrl: s.previewUrl,
-                        onTap: () =>
-                            context.push(RouteNames.sticker(s.slug ?? s.id)),
+                        onTap: () => context.push(RouteNames.sticker(s.id)),
                       );
                     }, childCount: state.items.length),
                   ),

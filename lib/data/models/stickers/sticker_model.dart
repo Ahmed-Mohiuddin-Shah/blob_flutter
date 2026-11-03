@@ -1,3 +1,4 @@
+import 'package:blob_flutter/configs/remote/api/api_parse.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'sticker_model.g.dart';
@@ -37,12 +38,19 @@ class StickerModel {
 
   factory StickerModel.fromJson(Map<String, dynamic> json) {
     final mapped = Map<String, dynamic>.from(json);
-    mapped['id'] = '${json['id']}';
-    // List cards use thumbUrl; detail uses media[].
-    mapped['thumbnailUrl'] ??=
-        json['thumbUrl'] ?? json['thumbnailUrl'] ?? json['thumbnail'];
-    mapped['chatUrl'] ??= json['chatUrl'] ?? json['chat'];
-    mapped['imageUrl'] ??= json['imageUrl'] ?? json['image'];
+    mapped['id'] = ApiParse.asId(json['id']);
+    mapped['title'] ??= ApiParse.pickString(mapped, ['title', 'name']);
+    mapped['status'] ??=
+        json['moderationStatus'] ?? json['processingStatus'] ?? json['status'];
+    // List: thumbUrl; search hits: previewUrl; detail: media[].
+    mapped['thumbnailUrl'] ??= ApiParse.pickString(mapped, [
+      'thumbUrl',
+      'thumbnailUrl',
+      'previewUrl',
+      'thumbnail',
+    ]);
+    mapped['chatUrl'] ??= ApiParse.pickString(mapped, ['chatUrl', 'chat']);
+    mapped['imageUrl'] ??= ApiParse.pickString(mapped, ['imageUrl', 'image']);
 
     final media = json['media'];
     if (media is List) {

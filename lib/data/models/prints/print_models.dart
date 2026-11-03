@@ -1,3 +1,4 @@
+import 'package:blob_flutter/configs/remote/api/api_parse.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'print_models.g.dart';
@@ -20,8 +21,15 @@ class SheetModel {
 
   String get displayTitle => title?.isNotEmpty == true ? title! : (slug ?? id);
 
-  factory SheetModel.fromJson(Map<String, dynamic> json) =>
-      _$SheetModelFromJson(json);
+  factory SheetModel.fromJson(Map<String, dynamic> json) {
+    final mapped = Map<String, dynamic>.from(json);
+    mapped['id'] = ApiParse.asId(json['id']);
+    mapped['title'] ??= ApiParse.pickString(mapped, ['name', 'title']);
+    mapped['previewUrl'] = ApiParse.absoluteUrl(
+      ApiParse.pickString(mapped, ['previewUrl', 'thumbUrl']),
+    );
+    return _$SheetModelFromJson(mapped);
+  }
 
   Map<String, dynamic> toJson() => _$SheetModelToJson(this);
 }
@@ -44,8 +52,15 @@ class PackModel {
 
   String get displayTitle => title?.isNotEmpty == true ? title! : (slug ?? id);
 
-  factory PackModel.fromJson(Map<String, dynamic> json) =>
-      _$PackModelFromJson(json);
+  factory PackModel.fromJson(Map<String, dynamic> json) {
+    final mapped = Map<String, dynamic>.from(json);
+    mapped['id'] = ApiParse.asId(json['id']);
+    mapped['title'] ??= ApiParse.pickString(mapped, ['name', 'title']);
+    mapped['previewUrl'] = ApiParse.absoluteUrl(
+      ApiParse.pickString(mapped, ['previewUrl', 'thumbUrl']),
+    );
+    return _$PackModelFromJson(mapped);
+  }
 
   Map<String, dynamic> toJson() => _$PackModelToJson(this);
 }

@@ -1,3 +1,4 @@
+import 'package:blob_flutter/configs/remote/api/api_parse.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'collection_model.g.dart';
@@ -24,12 +25,16 @@ class CollectionModel {
 
   factory CollectionModel.fromJson(Map<String, dynamic> json) {
     final mapped = Map<String, dynamic>.from(json);
-    mapped['id'] = '${json['id']}';
-    mapped['title'] ??= json['name'] ?? json['title'];
+    mapped['id'] = ApiParse.asId(json['id']);
+    mapped['title'] ??= ApiParse.pickString(mapped, ['name', 'title']);
     mapped['itemCount'] ??= json['stickerCount'] ?? json['itemCount'];
     final thumbs = json['previewThumbUrls'];
     if (thumbs is List && thumbs.isNotEmpty) {
-      mapped['coverUrl'] ??= thumbs.first?.toString();
+      mapped['coverUrl'] ??= ApiParse.absoluteUrl(thumbs.first?.toString());
+    } else {
+      mapped['coverUrl'] = ApiParse.absoluteUrl(
+        ApiParse.pickString(mapped, ['coverUrl', 'previewUrl']),
+      );
     }
     return _$CollectionModelFromJson(mapped);
   }

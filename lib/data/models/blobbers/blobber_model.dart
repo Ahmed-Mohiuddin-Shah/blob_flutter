@@ -1,3 +1,4 @@
+import 'package:blob_flutter/configs/remote/api/api_parse.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'blobber_model.g.dart';
@@ -23,14 +24,17 @@ class BlobberModel {
 
   factory BlobberModel.fromJson(Map<String, dynamic> json) {
     final mapped = Map<String, dynamic>.from(json);
-    mapped['id'] = '${json['id']}';
-    mapped['bio'] ??= json['description'] ?? json['bio'];
-    mapped['displayName'] ??= json['displayName'] ?? json['name'];
+    mapped['id'] = ApiParse.asId(json['id']);
+    mapped['bio'] ??=
+        ApiParse.pickString(mapped, ['description', 'bio']);
+    mapped['displayName'] ??=
+        ApiParse.pickString(mapped, ['displayName', 'name']);
     final href = json['href'] as String?;
     if (href != null && href.startsWith('/blobbers/')) {
-      mapped['slug'] ??= href.split('/').last;
+      mapped['slug'] ??= href.split('/').where((s) => s.isNotEmpty).last;
     }
-    mapped['username'] ??= mapped['slug'] ?? json['username'];
+    mapped['username'] ??=
+        ApiParse.pickString(mapped, ['username', 'slug']) ?? mapped['slug'];
     return _$BlobberModelFromJson(mapped);
   }
 

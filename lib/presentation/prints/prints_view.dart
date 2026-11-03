@@ -53,7 +53,7 @@ class PrintsView extends StatelessWidget {
                       title: Text(s.displayTitle),
                       subtitle: Text(s.status ?? ''),
                       onTap: () =>
-                          context.push(RouteNames.sheet(s.slug ?? s.id)),
+                          context.push(RouteNames.sheet(s.id)),
                     );
                   },
                 ),
@@ -65,7 +65,7 @@ class PrintsView extends StatelessWidget {
                   return ListTile(
                     title: Text(p.displayTitle),
                     subtitle: Text(p.status ?? ''),
-                    onTap: () => context.push(RouteNames.pack(p.slug ?? p.id)),
+                    onTap: () => context.push(RouteNames.pack(p.id)),
                   );
                 },
               ),
@@ -142,14 +142,14 @@ class _PrintCreateBodyState extends State<_PrintCreateBody> {
                       title,
                     );
                     if (s != null && context.mounted) {
-                      context.go(RouteNames.sheet(s.slug ?? s.id));
+                      context.go(RouteNames.sheet(s.id));
                     }
                   } else {
                     final p = await context.read<PrintsCubit>().createPack(
                       title,
                     );
                     if (p != null && context.mounted) {
-                      context.go(RouteNames.pack(p.slug ?? p.id));
+                      context.go(RouteNames.pack(p.id));
                     }
                   }
                 },
