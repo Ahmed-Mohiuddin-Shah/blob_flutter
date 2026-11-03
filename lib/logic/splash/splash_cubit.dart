@@ -1,9 +1,9 @@
 import 'package:blob_flutter/configs/app/extensions/x_safe_cubit_mixin.dart';
 import 'package:blob_flutter/configs/app/global/app_globals.dart';
+import 'package:blob_flutter/configs/utils/xutils.dart';
 import 'package:blob_flutter/logic/auth/auth_cubit.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 enum SplashPhase { booting, forceUpdate, ready }
 
@@ -30,7 +30,7 @@ class SplashCubit extends Cubit<SplashState> with XSafeEmitMixin {
     if (version.isForceUpdate) {
       final url = version.check?.storeUrl;
       if (url != null && url.isNotEmpty) {
-        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+        await XUtils.launchURL(url);
       }
       xSafeEmit(
         SplashState(

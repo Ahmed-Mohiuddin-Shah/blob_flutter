@@ -2,7 +2,9 @@ import 'dart:ui';
 
 import 'package:blob_flutter/configs/app/global/app_colors.dart';
 import 'package:blob_flutter/configs/routes/route_names.dart';
+import 'package:blob_flutter/configs/utils/xutils.dart';
 import 'package:blob_flutter/gen/assets.gen.dart';
+import 'package:blob_flutter/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -30,6 +32,12 @@ class GlassAppBar extends StatelessWidget {
     return top + 56;
   }
 
+  static bool _showBack(BuildContext context) {
+    if (Navigator.of(context).canPop()) return true;
+    final loc = GoRouterState.of(context).uri.path;
+    return !XUtils.isShellTab(loc) && loc != RouteNames.splash;
+  }
+
   @override
   Widget build(BuildContext context) {
     final top = MediaQuery.paddingOf(context).top;
@@ -37,6 +45,7 @@ class GlassAppBar extends StatelessWidget {
     final tint = isDark
         ? const Color(0xE6101010)
         : const Color(0xE6FFFFFF);
+    final l10n = AppLocalizations.of(context);
 
     return Material(
       type: MaterialType.transparency,
@@ -69,10 +78,10 @@ class GlassAppBar extends StatelessWidget {
                   children: [
                     if (leading != null)
                       leading!
-                    else if (Navigator.of(context).canPop())
+                    else if (_showBack(context))
                       IconButton(
-                        tooltip: 'Back',
-                        onPressed: () => context.pop(),
+                        tooltip: l10n.back,
+                        onPressed: () => XUtils.safePop(context),
                         icon: const Icon(
                           Icons.arrow_back_ios_new_rounded,
                           size: 20,
@@ -94,8 +103,9 @@ class GlassAppBar extends StatelessWidget {
                     ...?actions,
                     if (showSettings)
                       IconButton(
-                        tooltip: 'Settings',
-                        onPressed: () => context.push(RouteNames.settings),
+                        tooltip: l10n.settings,
+                        onPressed: () =>
+                            context.pushOrPopTo(RouteNames.settings),
                         icon: Assets.svgs.lucide.settings.svg(
                           width: 22,
                           height: 22,

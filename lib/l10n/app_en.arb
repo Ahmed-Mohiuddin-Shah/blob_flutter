@@ -1,0 +1,23 @@
+{
+  "@@locale": "en",
+  "appTitle": "BLOB",
+  "@appTitle": {
+    "description": "Application title shown by the OS and MaterialApp"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings screen / button label"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Back navigation button tooltip"
+  },
+  "errorGeneric": "Something went wrong. Please try again.",
+  "@errorGeneric": {
+    "description": "Generic error message"
+  },
+  "couldNotOpenLink": "Could not open link",
+  "@couldNotOpenLink": {
+    "description": "Shown when url_launcher fails"
+  }
+}

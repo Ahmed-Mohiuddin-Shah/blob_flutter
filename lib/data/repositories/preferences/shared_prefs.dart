@@ -13,6 +13,7 @@ class SharedPrefs {
 
   static const _navRailSideKey = 'navRailSide';
   static const _themeModeKey = 'themeMode';
+  static const _localeKey = 'localeCode';
   static const _onboardingKey = 'isOnboardingComplete';
 
   NavRailSide get navRailSide {
@@ -28,6 +29,20 @@ class SharedPrefs {
 
   Future<bool> setThemeMode(String mode) =>
       _prefs!.setString(_themeModeKey, mode);
+
+  /// `null` / empty = follow device; else `en` | `ur`.
+  String? get localeCode {
+    final raw = _prefs?.getString(_localeKey)?.trim();
+    if (raw == null || raw.isEmpty || raw == 'system') return null;
+    return raw;
+  }
+
+  Future<bool> setLocaleCode(String? code) {
+    if (code == null || code.isEmpty || code == 'system') {
+      return _prefs!.remove(_localeKey);
+    }
+    return _prefs!.setString(_localeKey, code);
+  }
 
   bool get isOnboardingComplete => _prefs?.getBool(_onboardingKey) ?? false;
 

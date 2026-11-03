@@ -1,5 +1,6 @@
 import 'package:blob_flutter/configs/remote/api/prints/prints_repo.dart';
 import 'package:blob_flutter/configs/routes/route_names.dart';
+import 'package:blob_flutter/configs/utils/xutils.dart';
 import 'package:blob_flutter/logic/prints/prints_cubit.dart';
 import 'package:blob_flutter/presentation/widgets/auth_gate.dart';
 import 'package:blob_flutter/presentation/widgets/blob_scaffold.dart';
@@ -8,7 +9,6 @@ import 'package:blob_flutter/presentation/widgets/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class PrintsView extends StatelessWidget {
   const PrintsView({super.key});
@@ -217,10 +217,7 @@ class PrintDetailView extends StatelessWidget {
                   label: 'Open PNG',
                   onPressed: () {
                     final url = PrintsRepo.mediaUrl('png', id, sheet: isSheet);
-                    launchUrl(
-                      Uri.parse(url),
-                      mode: LaunchMode.externalApplication,
-                    );
+                    XUtils.launchURL(url);
                   },
                 ),
                 const SizedBox(height: 8),
@@ -228,10 +225,7 @@ class PrintDetailView extends StatelessWidget {
                   label: 'Open PDF',
                   onPressed: () {
                     final url = PrintsRepo.mediaUrl('pdf', id, sheet: isSheet);
-                    launchUrl(
-                      Uri.parse(url),
-                      mode: LaunchMode.externalApplication,
-                    );
+                    XUtils.launchURL(url);
                   },
                 ),
               ],

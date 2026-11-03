@@ -1,6 +1,7 @@
 import 'package:blob_flutter/configs/routes/navigator_key.dart';
 import 'package:blob_flutter/configs/routes/route_names.dart';
 import 'package:blob_flutter/configs/utils/deeplinks/deep_link_mapper.dart';
+import 'package:blob_flutter/configs/utils/xutils.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,6 +33,7 @@ abstract final class PendingDeepLink {
   }
 
   /// Call when leaving splash for the main shell.
+  /// Detail paths are pushed atop home so back returns to the shell.
   static void consumeAfterSplash(BuildContext context) {
     homeReady = true;
     final path = _path;
@@ -40,10 +42,15 @@ abstract final class PendingDeepLink {
       context.go(RouteNames.home);
       return;
     }
+    context.go(RouteNames.home);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final ctx = navigatorKey.currentContext;
       if (ctx == null || !ctx.mounted) return;
-      ctx.go(path);
+      if (XUtils.isShellTab(path)) {
+        ctx.go(path);
+      } else {
+        ctx.push(path);
+      }
     });
   }
 }

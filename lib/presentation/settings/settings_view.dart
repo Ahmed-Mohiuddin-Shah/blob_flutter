@@ -43,8 +43,9 @@ class SettingsView extends StatelessWidget {
             },
           ),
         ),
-        SpiverThemeTile(),
-        SpiverAuthTile(),
+        const SpiverLanguageTile(),
+        const SpiverThemeTile(),
+        const SpiverAuthTile(),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -76,6 +77,46 @@ class SettingsView extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class SpiverLanguageTile extends StatelessWidget {
+  const SpiverLanguageTile({super.key});
+
+  static const _system = 'system';
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
+        buildWhen: (p, c) => p.locale != c.locale,
+        builder: (context, state) {
+          final value = state.locale?.languageCode ?? _system;
+          return ListTile(
+            title: const Text('Language'),
+            subtitle: Text(switch (value) {
+              'ur' => 'اردو',
+              'en' => 'English',
+              _ => 'System',
+            }),
+            trailing: DropdownButton<String>(
+              value: value,
+              items: const [
+                DropdownMenuItem(value: _system, child: Text('System')),
+                DropdownMenuItem(value: 'en', child: Text('English')),
+                DropdownMenuItem(value: 'ur', child: Text('اردو')),
+              ],
+              onChanged: (code) {
+                if (code == null) return;
+                context.read<AppSettingsCubit>().setLocale(
+                  code == _system ? null : Locale(code),
+                );
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 }

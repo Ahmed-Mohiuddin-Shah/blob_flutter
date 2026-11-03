@@ -20,6 +20,9 @@ abstract final class AppColors {
   static const Color metroPink = Color(0xFFE8117F);
   static const Color metroOrange = Color(0xFFF26D21);
 
+  static const Color success = Color(0xFF2E9B4A);
+  static const Color error = Color(0xFFC62828);
+
   static const LinearGradient accentGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
